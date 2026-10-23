@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -15,35 +15,21 @@
         body { background-color: #000; color: #fff; min-height: 100vh; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
         h1 { text-align: center; margin-bottom: 20px; color: #fff; font-size: 22px; }
-        h2 { font-size: 15px; margin-bottom: 10px; color: #ccc; }
-        .upload-box { border: 2px dashed #ff0000; border-radius: 10px; padding: 30px 20px; text-align: center; margin-bottom: 20px; transition: 0.3s; }
-        .upload-box:hover { border-color: #ff4444; background: #1a1a1a; }
-        input[type="file"] { display: none; }
-        .btn { background-color: #ff0000; color: #fff; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin: 8px 0; font-weight: bold; }
-        .btn:hover { background-color: #cc0000; }
-        .btn:disabled { background-color: #555; cursor: not-allowed; }
-        .preview { background: #1a1a1a; border-radius: 8px; padding: 15px; margin-top: 20px; max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 11px; white-space: pre-wrap; border: 1px solid #333; }
-        .status { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none; }
+        .format-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
+        .format-buttons span { background-color: #ff0000; color: #fff; padding: 10px 16px; border-radius: 5px; font-weight: bold; }
+        .upload-box { border: 2px dashed #ff0000; border-radius: 10px; padding: 30px 20px; text-align: center; margin-bottom: 20px; }
+        .btn { background-color: #ff0000; color: #fff; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn:disabled { background-color: #555; }
+        .status { margin-top: 15px; padding: 12px; border-radius: 5px; text-align: center; display: none; }
         .status.sukses { background: #1a4d1a; color: #90ee90; display: block; }
         .status.warning { background: #4d4d1a; color: #ffff90; display: block; }
         .status.error { background: #4d1a1a; color: #ffb3b3; display: block; }
-        .file-name { margin-top: 10px; font-size: 14px; color: #aaa; }
         .loading { text-align: center; display: none; margin: 15px 0; }
         .spinner { border: 3px solid #333; border-top: 3px solid #ff0000; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .file-list { background: #1a1a1a; border-radius: 8px; padding: 10px; margin-bottom: 15px; max-height: 120px; overflow-y: auto; border: 1px solid #333; }
-        .file-item { padding: 5px 8px; border-bottom: 1px solid #333; font-size: 12px; display: flex; justify-content: space-between; }
+        .file-list { background: #1a1a1a; padding: 12px; border-radius: 5px; margin-bottom: 15px; display: none; }
+        .file-item { padding: 6px 0; border-bottom: 1px solid #333; font-size: 13px; }
         .file-item:last-child { border-bottom: none; }
-        .stats-box { background: #1a1a1a; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        .stats-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #2a2a2a; font-size: 14px; }
-        .stats-row:last-child { border-bottom: none; }
-        .stats-label { color: #aaa; }
-        .stats-value { color: #fff; font-weight: bold; }
-        .history-box { background: #1a1a1a; border-radius: 8px; padding: 12px; margin-top: 15px; border: 1px solid #333; max-height: 180px; overflow-y: auto; }
-        .history-item { padding: 8px 0; border-bottom: 1px solid #2a2a2a; font-size: 13px; }
-        .history-date { color: #888; font-size: 11px; }
-        .format-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
-        .format-buttons span { background-color: #ff0000; color: #ffffff; padding: 10px 16px; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -58,61 +44,24 @@
             <span>🖼️ JPEG</span>
         </div>
 
-        <div class="upload-box" id="uploadArea">
-            <p style="font-size: 18px; margin-bottom: 15px;">Klik untuk memilih file</p>
-            <p style="font-size: 13px; color: #888;">Bisa pilih banyak file sekaligus — otomatis jadi JSON & tersimpan</p>
-            <input type="file" id="fileInput" accept=".xlsx,.csv,.pdf,.jpg,.jpeg,.png" multiple>
+        <div class="upload-box">
+            <p style="font-size: 18px; margin-bottom: 15px;">Pilih File</p>
+            <p style="font-size: 13px; color: #888; margin-bottom: 20px;">Mendukung: XLSX, CSV, PDF, JPG, JPEG</p>
+            <input type="file" id="fileInput" accept=".xlsx,.csv,.pdf,.jpg,.jpeg,.png" multiple style="display: none;">
             <button class="btn" onclick="document.getElementById('fileInput').click()">PILIH FILE</button>
-            <div class="file-name" id="fileName"></div>
         </div>
 
-        <div class="file-list" id="fileList" style="display: none;">
-            <strong style="margin-bottom: 8px; display: block;">📁 File yang dipilih:</strong>
+        <div class="file-list" id="fileList">
+            <strong style="margin-bottom: 8px; display: block;">📁 File Terpilih:</strong>
             <div id="fileListContent"></div>
-        </div>
-
-        <div class="stats-box" id="statsOverview">
-            <h2>📊 Ringkasan Data</h2>
-            <div class="stats-row">
-                <span class="stats-label">Total File Diimpor</span>
-                <span class="stats-value" id="totalFile">0</span>
-            </div>
-            <div class="stats-row">
-                <span class="stats-label">Total Data Kendaraan</span>
-                <span class="stats-value" id="totalData">0</span>
-            </div>
-            <div class="stats-row">
-                <span class="stats-label">Data Hari Ini</span>
-                <span class="stats-value" id="dataHariIni">0</span>
-            </div>
-            <div class="stats-row">
-                <span class="stats-label">Data Bulan Ini</span>
-                <span class="stats-value" id="dataBulanIni">0</span>
-            </div>
-            <div class="stats-row">
-                <span class="stats-label">Data Tahun Ini</span>
-                <span class="stats-value" id="dataTahunIni">0</span>
-            </div>
         </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px;">Memproses & Menyimpan ke Firebase...</p>
+            <p id="loadingText" style="margin-top: 10px;">Memproses...</p>
         </div>
 
         <div class="status" id="status"></div>
-
-        <div class="preview" id="previewArea" style="display: none;">
-            <h3 style="color: #ff4444; margin-bottom: 10px;">📋 Hasil JSON Terakhir:</h3>
-            <pre id="jsonOutput"></pre>
-        </div>
-
-        <div class="history-box" id="historyBox">
-            <h2>📈 Riwayat Impor</h2>
-            <div id="historyContent">
-                <p style="color: #666; text-align: center;">Memuat riwayat...</p>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -128,355 +77,112 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        let fileTerpilih = [];
 
-        // === PETA SEMUA KOLOM DARI EXCEL/CSV KE JSON ===
         const kolomPeta = {
-            'waktu_penemuan': 'waktuPenemuan',
-            'wilayah': 'wilayah',
-            'nopol': 'noPolisi',
-            'no_polisi': 'noPolisi',
-            'seri': 'seri',
-            'noka': 'nomorRangka',
-            'nosin': 'nomorMesin',
-            'nama_pemilik': 'namaPemilik',
-            'nama': 'namaPemilik',
-            'asset_code': 'assetCode',
-            'no_ktp': 'noKtp',
-            'nik': 'noKtp',
-            'no_kk': 'noKk',
-            'no_hp': 'noHp',
-            'email': 'email',
-            'pekerjaan': 'pekerjaan',
-            'alamat': 'alamat',
-            'rt': 'rt',
-            'rw': 'rw',
-            'merk': 'merk',
-            'merek': 'merk',
-            'type': 'tipe',
-            'tipe': 'tipe',
-            'tahun': 'tahunPembuatan',
-            'tahun_pembuatan': 'tahunPembuatan',
-            'cc': 'isiSilinder',
-            'isi_cylinder': 'isiSilinder',
-            'isi_silinder': 'isiSilinder',
-            'bbm': 'namaBbm',
-            'nama_bbm': 'namaBbm',
-            'warna': 'warna',
-            'warna_tnkb': 'warnaTnkb',
-            'jenis_kendaraan': 'jenisKendaraan',
-            'model_kendaraan': 'modelKendaraan',
-            'sumbu': 'jumlahSumbu',
-            'jumlah_sumbu': 'jumlahSumbu',
-            'roda': 'jumlahRoda',
-            'jumlah_roda': 'jumlahRoda',
-            'no_bpkb': 'noBpkb',
-            'no_stnk': 'noStnk',
-            'tgl_stnk': 'tglStnk',
-            'tgl_daftar': 'tglDaftar',
-            'no_faktur': 'noFaktur',
-            'tgl_faktur': 'tglFaktur',
-            'tgl_pengesahan': 'tglPengesahan',
-            'polda': 'namaPolda',
-            'nama_polda': 'namaPolda',
-            'lokasi_gps': 'lokasiGps',
-            'maps_url': 'mapsUrl',
-            'mssdn': 'mssdn'
+            'waktu_penemuan': 'waktuPenemuan', 'wilayah': 'wilayah', 'nopol': 'noPolisi', 'no_polisi': 'noPolisi',
+            'seri': 'seri', 'noka': 'nomorRangka', 'nosin': 'nomorMesin', 'nama_pemilik': 'namaPemilik',
+            'no_ktp': 'noKtp', 'nik': 'noKtp', 'no_kk': 'noKk', 'no_hp': 'noHp', 'email': 'email',
+            'pekerjaan': 'pekerjaan', 'alamat': 'alamat', 'rt': 'rt', 'rw': 'rw', 'merk': 'merk',
+            'type': 'tipe', 'tahun_pembuatan': 'tahunPembuatan', 'cc': 'isiSilinder', 'warna': 'warna',
+            'mssdn': 'mssdn', 'no_bpkb': 'noBpkb', 'no_stnk': 'noStnk', 'tgl_daftar': 'tglDaftar'
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
-            muatStatistikFirebase();
-            muatRiwayatImpor();
-        });
-
         const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.getElementById('uploadArea');
+        fileInput.addEventListener('change', prosesFile);
 
-        fileInput.addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                fileTerpilih = Array.from(e.target.files);
-                tampilkanDaftarFile();
-                prosesOtomatis();
-            }
-        });
+        async function prosesFile(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
 
-        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#ff4444'; });
-        uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = '#ff0000'; });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#ff0000';
-            if (e.dataTransfer.files.length > 0) {
-                fileTerpilih = Array.from(e.dataTransfer.files);
-                fileInput.files = e.dataTransfer.files;
-                tampilkanDaftarFile();
-                prosesOtomatis();
-            }
-        });
+            // Tampilkan daftar file
+            const fileList = document.getElementById('fileList');
+            const fileListContent = document.getElementById('fileListContent');
+            fileList.style.display = 'block';
+            fileListContent.innerHTML = files.map((f, i) => 
+                `<div class="file-item">${i + 1}. ${f.name} — ${(f.size/1024).toFixed(1)} KB</div>`
+            ).join('');
 
-        function tampilkanDaftarFile() {
-            const listEl = document.getElementById('fileList');
-            const content = document.getElementById('fileListContent');
-            listEl.style.display = 'block';
-            content.innerHTML = '';
-            fileTerpilih.forEach((f, i) => {
-                content.innerHTML += `
-                    <div class="file-item">
-                        <span>${i + 1}. ${f.name}</span>
-                        <span style="color:#888">${(f.size/1024).toFixed(1)} KB</span>
-                    </div>`;
-            });
-            document.getElementById('fileName').textContent = `${fileTerpilih.length} file terpilih`;
-        }
+            tampilkanLoading(true, `Siap memproses ${files.length} file...`);
+            tampilkanStatus('', '');
 
-        async function prosesOtomatis() {
-            tampilkanLoading(true);
-            tampilkanStatus('Memproses & menyimpan ke Firebase...', 'warning');
-            
-            const semuaDataMentah = [];
-            const namaFileSumber = fileTerpilih.map(f => f.name);
-            let totalBarisSemuaFile = 0;
-            
-            try {
-                for (const file of fileTerpilih) {
-                    const ekstensi = file.name.split('.').pop().toLowerCase();
-                    let dataDariFile = [];
+            const semuaData = [];
+            let berhasil = 0, gagal = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ekstensi = file.name.split('.').pop().toLowerCase();
+                tampilkanLoading(true, `(${i+1}/${files.length}) Memproses: ${file.name}`);
+
+                try {
+                    let hasil = [];
                     
                     if (ekstensi === 'xlsx') {
-                        dataDariFile = await prosesExcel(file);
+                        hasil = await bacaXLSX(file);
                     } else if (ekstensi === 'csv') {
-                        dataDariFile = await prosesCSV(file);
+                        hasil = await bacaCSV(file);
                     } else if (ekstensi === 'pdf') {
-                        dataDariFile = await prosesPDF(file);
+                        hasil = await bacaPDF(file);
                     } else if (['jpg', 'jpeg', 'png'].includes(ekstensi)) {
-                        dataDariFile = [prosesGambar(file)];
+                        hasil = [bacaGambar(file)];
+                    } else {
+                        gagal++;
+                        continue;
                     }
-                    
-                    totalBarisSemuaFile += dataDariFile.length;
-                    semuaDataMentah.push(...dataDariFile);
-                }
 
-                const dataNormal = semuaDataMentah.map(baris => normalisasiKolom(baris));
-                const dataTidakKosong = dataNormal.filter(baris => !isBarisKosong(baris));
-                const dataBersih = prosesDataGanda(dataTidakKosong);
-
-                if (dataBersih.length > 0) {
-                    await simpanDataKeFirebase(dataBersih, namaFileSumber);
-                    await catatRiwayatDanStatistik(namaFileSumber.length, dataBersih.length);
+                    semuaData.push(...hasil);
+                    berhasil++;
                     
-                    const hasilJSON = {
-                        tanggalProses: new Date().toLocaleString('id-ID'),
-                        jumlahFile: namaFileSumber.length,
-                        totalBarisMentah: totalBarisSemuaFile,
-                        totalDataBersih: dataBersih.length,
-                        dataKendaraan: dataBersih.slice(0, 10)
-                    };
-                    document.getElementById('previewArea').style.display = 'block';
-                    document.getElementById('jsonOutput').textContent = JSON.stringify(hasilJSON, null, 2);
-                    
-                    tampilkanStatus(`✅ Berhasil! ${dataBersih.length} data dari ${namaFileSumber.length} file tersimpan otomatis!`, 'sukses');
-                } else {
-                    tampilkanStatus('⚠️ Tidak ada data valid yang bisa disimpan', 'warning');
+                } catch (err) {
+                    console.error(file.name, err);
+                    gagal++;
                 }
-                
-            } catch (err) {
-                tampilkanStatus('❌ Error: ' + err.message, 'error');
-                console.error(err);
             }
+
+            // Normalisasi & simpan
+            tampilkanLoading(true, `Menyimpan ${semuaData.length} data ke Firebase...`);
             
+            const dataBersih = semuaData.map(baris => {
+                const obj = {};
+                for (const [k, v] of Object.entries(baris)) {
+                    const kunci = String(k).trim().toLowerCase();
+                    obj[kolomPeta[kunci] || kunci] = v !== undefined ? v : '';
+                }
+                return obj;
+            }).filter(b => Object.values(b).some(v => v && String(v).trim() !== ''));
+
+            if (dataBersih.length > 0) {
+                const batch = {};
+                dataBersih.forEach((item, idx) => {
+                    const kunci = item.nomorRangka || item.noPolisi || `data_${Date.now()}_${idx}`;
+                    batch[String(kunci).replace(/[.#$/[\]]/g, '_')] = item;
+                });
+                await db.ref('data_kendaraan').update(batch);
+                tampilkanStatus(`✅ Berhasil: ${berhasil} file, ${dataBersih.length} data tersimpan!${gagal > 0 ? ` ⚠️ ${gagal} file gagal` : ''}`, 'sukses');
+            } else {
+                tampilkanStatus('⚠️ Tidak ada data yang valid disimpan', 'warning');
+            }
+
             tampilkanLoading(false);
         }
 
-        async function simpanDataKeFirebase(data, namaFileSumber) {
-            const batch = {};
-            data.forEach((item, idx) => {
-                const kunci = item.nomorRangka || item.noPolisi || item.nomorMesin || `data_${Date.now()}_${idx}`;
-                const kunciAman = String(kunci).replace(/[.#$/[\]]/g, '_');
-                batch[kunciAman] = item;
-            });
-            await db.ref('data_kendaraan').update(batch);
-        }
-
-        async function catatRiwayatDanStatistik(jumlahFile, jumlahData) {
-            const sekarang = new Date();
-            const tgl = sekarang.getDate();
-            const bln = sekarang.getMonth() + 1;
-            const thn = sekarang.getFullYear();
-            const tanggalStr = sekarang.toLocaleDateString('id-ID');
-            const jamStr = sekarang.toLocaleTimeString('id-ID');
-
-            const riwayatRef = db.ref('riwayat_impor').push();
-            await riwayatRef.set({
-                timestamp: sekarang.toISOString(),
-                tanggal: tanggalStr,
-                jam: jamStr,
-                jumlahFile: jumlahFile,
-                jumlahData: jumlahData
-            });
-
-            const harianRef = db.ref('statistik/harian/' + `${thn}-${bln}-${tgl}`);
-            const snapHarian = await harianRef.once('value');
-            const dataHarian = snapHarian.val() || { file: 0, data: 0 };
-            await harianRef.update({
-                tanggal: tanggalStr,
-                file: dataHarian.file + jumlahFile,
-                data: dataHarian.data + jumlahData,
-                updatedAt: sekarang.toISOString()
-            });
-
-            const bulananRef = db.ref('statistik/bulanan/' + `${thn}-${bln}`);
-            const snapBulan = await bulananRef.once('value');
-            const dataBulan = snapBulan.val() || { file: 0, data: 0 };
-            await bulananRef.update({
-                bulan: `${bln}/${thn}`,
-                file: dataBulan.file + jumlahFile,
-                data: dataBulan.data + jumlahData,
-                updatedAt: sekarang.toISOString()
-            });
-
-            const tahunanRef = db.ref('statistik/tahunan/' + thn);
-            const snapTahun = await tahunanRef.once('value');
-            const dataTahun = snapTahun.val() || { file: 0, data: 0 };
-            await tahunanRef.update({
-                tahun: thn,
-                file: dataTahun.file + jumlahFile,
-                data: dataTahun.data + jumlahData,
-                updatedAt: sekarang.toISOString()
-            });
-
-            const totalRef = db.ref('statistik/total');
-            const snapTotal = await totalRef.once('value');
-            const dataTotal = snapTotal.val() || { file: 0, data: 0 };
-            await totalRef.update({
-                file: dataTotal.file + jumlahFile,
-                data: dataTotal.data + jumlahData,
-                updatedAt: sekarang.toISOString()
-            });
-
-            await muatStatistikFirebase();
-            await muatRiwayatImpor();
-        }
-
-        async function muatStatistikFirebase() {
-            const sekarang = new Date();
-            const tgl = sekarang.getDate();
-            const bln = sekarang.getMonth() + 1;
-            const thn = sekarang.getFullYear();
-
-            try {
-                const snapTotal = await db.ref('statistik/total').once('value');
-                const total = snapTotal.val() || { file: 0, data: 0 };
-                document.getElementById('totalFile').textContent = total.file;
-                document.getElementById('totalData').textContent = total.data;
-
-                const snapHarian = await db.ref(`statistik/harian/${thn}-${bln}-${tgl}`).once('value');
-                const harian = snapHarian.val();
-                document.getElementById('dataHariIni').textContent = harian ? harian.data : 0;
-
-                const snapBulan = await db.ref(`statistik/bulanan/${thn}-${bln}`).once('value');
-                const bulanan = snapBulan.val();
-                document.getElementById('dataBulanIni').textContent = bulanan ? bulanan.data : 0;
-
-                const snapTahun = await db.ref(`statistik/tahunan/${thn}`).once('value');
-                const tahunan = snapTahun.val();
-                document.getElementById('dataTahunIni').textContent = tahunan ? tahunan.data : 0;
-                
-            } catch (e) {
-                console.log('Belum ada data statistik');
-            }
-        }
-
-        async function muatRiwayatImpor() {
-            const el = document.getElementById('historyContent');
-            try {
-                const snap = await db.ref('riwayat_impor').orderByChild('timestamp').limitToLast(10).once('value');
-                const data = snap.val();
-                
-                if (!data) {
-                    el.innerHTML = '<p style="color:#666; text-align:center;">Belum ada riwayat impor</p>';
-                    return;
-                }
-
-                const items = Object.values(data).reverse();
-                el.innerHTML = items.map(d => `
-                    <div class="history-item">
-                        <div>${d.jumlahFile} file → <strong>${d.jumlahData} data</strong></div>
-                        <div class="history-date">📅 ${d.tanggal} · ${d.jam}</div>
-                    </div>
-                `).join('');
-                
-            } catch (e) {
-                el.innerHTML = '<p style="color:#666; text-align:center;">Gagal memuat riwayat</p>';
-            }
-        }
-
-        function normalisasiKolom(baris) {
-            const hasil = {};
-            for (const [kunciAsli, nilai] of Object.entries(baris)) {
-                const kunciBersih = kunciAsli.trim().toLowerCase();
-                const kunciStandar = kolomPeta[kunciBersih] || kunciBersih;
-                hasil[kunciStandar] = nilai !== undefined && nilai !== null ? nilai : '';
-            }
-            return hasil;
-        }
-
-        function isBarisKosong(baris) {
-            const nilai = Object.values(baris).filter(v => v && String(v).trim() !== '');
-            return nilai.length === 0;
-        }
-
-        function prosesDataGanda(data) {
-            const petaUnik = new Map();
-            for (const baris of data) {
-                const idUnik = [baris.noPolisi, baris.nomorRangka, baris.nomorMesin].filter(Boolean).join('|');
-                if (!idUnik) {
-                    const kunciBaru = `baris_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-                    petaUnik.set(kunciBaru, baris);
-                    continue;
-                }
-                if (petaUnik.has(idUnik)) {
-                    const yangAda = petaUnik.get(idUnik);
-                    if (hitungKelengkapan(baris) > hitungKelengkapan(yangAda)) {
-                        petaUnik.set(idUnik, baris);
-                    }
-                } else {
-                    petaUnik.set(idUnik, baris);
-                }
-            }
-            return Array.from(petaUnik.values());
-        }
-
-        function hitungKelengkapan(baris) {
-            let skor = 0;
-            for (const v of Object.values(baris)) {
-                if (v && String(v).trim() !== '') skor++;
-            }
-            return skor;
-        }
-
-        function prosesExcel(file) {
+        function bacaXLSX(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = e => {
                     try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        let semuaData = [];
-                        workbook.SheetNames.forEach(name => {
-                            const sheet = workbook.Sheets[name];
-                            semuaData = semuaData.concat(XLSX.utils.sheet_to_json(sheet, { defval: '' }));
-                        });
-                        resolve(semuaData);
+                        const wb = XLSX.read(e.target.result, { type: 'array' });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        resolve(XLSX.utils.sheet_to_json(ws, { defval: '' }));
                     } catch (err) { reject(err); }
                 };
                 reader.readAsArrayBuffer(file);
             });
         }
 
-        function prosesCSV(file) {
+        function bacaCSV(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = e => {
                     try {
                         const teks = e.target.result;
                         const baris = teks.split(/\r?\n/).filter(b => b.trim() !== '');
@@ -488,7 +194,7 @@
                             const nilai = baris[i].split(pemisah).map(n => n.trim().replace(/^"|"$/g, ''));
                             if (nilai.every(n => n === '')) continue;
                             const obj = {};
-                            header.forEach((key, idx) => { obj[key] = nilai[idx] || ''; });
+                            header.forEach((k, idx) => obj[k] = nilai[idx] || '');
                             data.push(obj);
                         }
                         resolve(data);
@@ -498,41 +204,39 @@
             });
         }
 
-        async function prosesPDF(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        async function bacaPDF(file) {
+            const buf = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
             let teks = '';
             for (let i = 1; i <= pdf.numPages; i++) {
-                const halaman = await pdf.getPage(i);
-                const konten = await halaman.getTextContent();
-                teks += konten.items.map(item => item.str).join(' ') + '\n';
+                const page = await pdf.getPage(i);
+                const txt = await page.getTextContent();
+                teks += txt.items.map(x => x.str).join(' ') + '\n';
             }
-            const baris = teks.split('\n').filter(b => b.trim() !== '');
-            return baris.map(b => ({ isiTeks: b }));
+            return [{ isiPDF: teks, namaFile: file.name }];
         }
 
-        function prosesGambar(file) {
+        function bacaGambar(file) {
             return {
                 namaFile: file.name,
                 jenis: 'Gambar',
-                tanggalProses: new Date().toLocaleString('id-ID'),
-                ukuranFile: (file.size / 1024).toFixed(2) + ' KB',
-                tipeFile: file.type,
-                keterangan: 'Gambar disimpan sebagai referensi file'
+                ukuran: (file.size / 1024).toFixed(2) + ' KB',
+                tipe: file.type,
+                waktu: new Date().toLocaleString('id-ID')
             };
+        }
+
+        function tampilkanLoading(aktif, teks) {
+            document.getElementById('loading').style.display = aktif ? 'block' : 'none';
+            if (teks) document.getElementById('loadingText').textContent = teks;
         }
 
         function tampilkanStatus(pesan, jenis) {
             const el = document.getElementById('status');
             el.textContent = pesan;
             el.className = 'status ' + jenis;
-            el.style.display = 'block';
-        }
-
-        function tampilkanLoading(aktif) {
-            document.getElementById('loading').style.display = aktif ? 'block' : 'none';
+            el.style.display = pesan ? 'block' : 'none';
         }
     </script>
 </body>
 </html>
-
