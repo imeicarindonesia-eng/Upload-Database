@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unggah Data Kendaraan</title>
+    <title>Unggah Data Kendaraan (Fast Import)</title>
+    <!-- Firebase JS SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <!-- SheetJS (XLSX) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- PapaParse (Super Fast CSV Parser) -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <!-- PDF.js -->
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js';</script>
     
@@ -18,24 +23,47 @@
         .format-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
         .format-buttons span { background-color: #ff0000; color: #fff; padding: 10px 16px; border-radius: 5px; font-weight: bold; }
         .upload-box { border: 2px dashed #ff0000; border-radius: 10px; padding: 30px 20px; text-align: center; margin-bottom: 20px; }
-        .btn { background-color: #ff0000; color: #fff; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn:disabled { background-color: #555; }
-        .status { margin-top: 15px; padding: 12px; border-radius: 5px; text-align: center; display: none; }
+        .btn { background-color: #ff0000; color: #fff; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background-color: #555; cursor: not-allowed; }
+        .status { margin-top: 15px; padding: 12px; border-radius: 5px; text-align: center; display: none; font-size: 14px; line-height: 1.4; }
         .status.sukses { background: #1a4d1a; color: #90ee90; display: block; }
         .status.warning { background: #4d4d1a; color: #ffff90; display: block; }
         .status.error { background: #4d1a1a; color: #ffb3b3; display: block; }
         .loading { text-align: center; display: none; margin: 15px 0; }
         .spinner { border: 3px solid #333; border-top: 3px solid #ff0000; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .file-list { background: #1a1a1a; padding: 12px; border-radius: 5px; margin-bottom: 15px; display: none; }
-        .file-item { padding: 6px 0; border-bottom: 1px solid #333; font-size: 13px; }
+        .file-list { background: #1a1a1a; padding: 12px; border-radius: 5px; margin-bottom: 15px; display: none; max-height: 200px; overflow-y: auto; }
+        .file-item { padding: 6px 0; border-bottom: 1px solid #333; font-size: 13px; color: #ccc; }
         .file-item:last-child { border-bottom: none; }
+        .progress-bar-bg { width: 100%; background-color: #333; height: 8px; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+        .progress-bar-fill { width: 0%; height: 100%; background-color: #ff0000; transition: width 0.2s; }
+
+        /* Style Ringkasan Impor & JSON Viewer */
+        .summary-card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 15px; margin-top: 20px; display: none; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: #262626; padding: 10px; border-radius: 6px; text-align: center; border-left: 3px solid #ff0000; }
+        .stat-box .val { font-size: 18px; font-weight: bold; color: #ff4d4d; }
+        .stat-box .lbl { font-size: 11px; color: #aaa; margin-top: 2px; }
+        .action-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .btn-sub { flex: 1; min-width: 120px; padding: 8px 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: background 0.2s; text-align: center; }
+        .btn-sub:hover { background: #444; }
+        .json-container { display: none; background: #0d0d0d; border: 1px solid #333; padding: 12px; border-radius: 5px; max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 12px; color: #00ff66; white-space: pre-wrap; word-break: break-all; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📂 Unggah Data Kendaraan</h1>
         
+        <!-- Widget Status & Tombol Cek Real-time Firebase Database -->
+        <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 13px; color: #ccc;">
+                🔥 Total Data di Firebase DB: <br>
+                <strong id="totalFirebaseHeaderCount" style="color: #00ff66; font-size: 17px; line-height: 1.3;">Mengecek...</strong>
+            </div>
+            <button onclick="hitungkanTotalFirebase()" style="background: #2b2b2b; border: 1px solid #555; color: #fff; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: background 0.2s;" onmouseover="this.style.background='#444'" onmouseout="this.style.background='#2b2b2b'">🔄 Cek Total Firebase</button>
+        </div>
+
         <div class="format-buttons">
             <span>📄 XLSX</span>
             <span>📊 CSV</span>
@@ -44,24 +72,76 @@
             <span>🖼️ JPEG</span>
         </div>
 
+        <!-- Pengaturan Mode Data Ganda -->
+        <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 15px; margin-bottom: 20px;">
+            <label style="font-size: 13px; color: #ccc; display: block; margin-bottom: 8px; font-weight: bold;">⚡ Penanganan Data Ganda / Duplikat:</label>
+            <div style="display: flex; gap: 15px; font-size: 13px; color: #ddd; flex-wrap: wrap;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="modeDuplikat" value="lengkap" checked> ✨ Gabung & Ambil Data Terlengkap
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="modeDuplikat" value="timpa"> 🔄 Timpa Data Lama (Update)
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="modeDuplikat" value="abaikan"> 🚫 Abaikan / Lewati Data Ganda
+                </label>
+            </div>
+        </div>
+
         <div class="upload-box">
             <p style="font-size: 18px; margin-bottom: 15px;">Pilih File</p>
             <p style="font-size: 13px; color: #888; margin-bottom: 20px;">Mendukung: XLSX, CSV, PDF, JPG, JPEG</p>
             <input type="file" id="fileInput" accept=".xlsx,.csv,.pdf,.jpg,.jpeg,.png" multiple style="display: none;">
-            <button class="btn" onclick="document.getElementById('fileInput').click()">PILIH FILE</button>
+            <button class="btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">PILIH FILE</button>
         </div>
 
         <div class="file-list" id="fileList">
-            <strong style="margin-bottom: 8px; display: block;">📁 File Terpilih:</strong>
+            <strong style="margin-bottom: 8px; display: block; color: #fff;">📁 File Terpilih:</strong>
             <div id="fileListContent"></div>
         </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p id="loadingText" style="margin-top: 10px;">Memproses...</p>
+            <p id="loadingText" style="margin-top: 10px; font-size: 14px;">Memproses...</p>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
         </div>
 
         <div class="status" id="status"></div>
+
+        <!-- Ringkasan Hasil Import & JSON Output -->
+        <div class="summary-card" id="summaryCard">
+            <h3 style="font-size: 15px; margin-bottom: 12px; color: #fff;">📊 Ringkasan Hasil Import & Firebase</h3>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="val" id="totalFilesCount">0</div>
+                    <div class="lbl">FILE DIIMPOR</div>
+                </div>
+                <div class="stat-box">
+                    <div class="val" id="totalRecordsCount">0</div>
+                    <div class="lbl">BARIS DATA (JSON)</div>
+                </div>
+                <div class="stat-box" style="border-left-color: #ffaa00;">
+                    <div class="val" id="totalDuplicateCount" style="color: #ffaa00;">0</div>
+                    <div class="lbl">DATA DUPLIKAT</div>
+                </div>
+                <div class="stat-box" style="border-left-color: #00ff66;">
+                    <div class="val" id="totalFirebaseCount" style="color: #00ff66;">-</div>
+                    <div class="lbl">TOTAL DI FIREBASE</div>
+                </div>
+            </div>
+
+            <div class="action-btns">
+                <button class="btn-sub" onclick="downloadJSON()">📥 Unduh File JSON</button>
+                <button class="btn-sub" onclick="copyJSON()">📋 Salin JSON</button>
+                <button class="btn-sub" id="btnToggleJson" onclick="toggleJSON()">👁️ Lihat Detail JSON</button>
+            </div>
+
+            <div class="json-container" id="jsonViewerContainer">
+                <pre id="jsonViewer"></pre>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -90,9 +170,33 @@
         const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', prosesFile);
 
+        let lastProcessedData = []; // Menyimpan data JSON hasil impor terbaru
+
+        // Helper untuk memberikan kesempatan UI me-render progress bar tanpa mengunci thread
+        const yieldThread = () => new Promise(resolve => setTimeout(resolve, 0));
+
+        // Helper untuk menggabungkan dua data duplikat dan mengambil nilai yang paling lengkap
+        function mergeDataTerlengkap(objA = {}, objB = {}) {
+            const hasil = { ...objA };
+            for (const [key, valB] of Object.entries(objB)) {
+                const strB = valB !== undefined && valB !== null ? String(valB).trim() : '';
+                const strA = hasil[key] !== undefined && hasil[key] !== null ? String(hasil[key]).trim() : '';
+
+                if (strB !== '') {
+                    // Jika data lama kosong ATAU data baru memiliki karakter/informasi yang lebih panjang
+                    if (strA === '' || strB.length >= strA.length) {
+                        hasil[key] = valB;
+                    }
+                }
+            }
+            return hasil;
+        }
+
         async function prosesFile(e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
+
+            document.getElementById('uploadBtn').disabled = true;
 
             // Tampilkan daftar file
             const fileList = document.getElementById('fileList');
@@ -102,26 +206,31 @@
                 `<div class="file-item">${i + 1}. ${f.name} — ${(f.size/1024).toFixed(1)} KB</div>`
             ).join('');
 
-            tampilkanLoading(true, `Siap memproses ${files.length} file...`);
+            tampilkanLoading(true, `Menyiapkan ${files.length} file...`, 5);
             tampilkanStatus('', '');
 
             const semuaData = [];
             let berhasil = 0, gagal = 0;
 
+            const totalAwal = performance.now();
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const ekstensi = file.name.split('.').pop().toLowerCase();
-                tampilkanLoading(true, `(${i+1}/${files.length}) Memproses: ${file.name}`);
+                const progressPct = Math.round(((i + 1) / files.length) * 50); // Parsing mengambil 0-50%
+                
+                tampilkanLoading(true, `(${i+1}/${files.length}) Parsing Fast: ${file.name}`, progressPct);
+                await yieldThread();
 
                 try {
                     let hasil = [];
                     
-                    if (ekstensi === 'xlsx') {
-                        hasil = await bacaXLSX(file);
+                    if (ekstensi === 'xlsx' || ekstensi === 'xls') {
+                        hasil = await bacaXLSXFast(file);
                     } else if (ekstensi === 'csv') {
-                        hasil = await bacaCSV(file);
+                        hasil = await bacaCSVFast(file);
                     } else if (ekstensi === 'pdf') {
-                        hasil = await bacaPDF(file);
+                        hasil = await bacaPDFFast(file);
                     } else if (['jpg', 'jpeg', 'png'].includes(ekstensi)) {
                         hasil = [bacaGambar(file)];
                     } else {
@@ -133,14 +242,15 @@
                     berhasil++;
                     
                 } catch (err) {
-                    console.error(file.name, err);
+                    console.error('Error file:', file.name, err);
                     gagal++;
                 }
             }
 
-            // Normalisasi & simpan
-            tampilkanLoading(true, `Menyimpan ${semuaData.length} data ke Firebase...`);
-            
+            // Normalisasi Data
+            tampilkanLoading(true, `Normalisasi ${semuaData.length} baris data...`, 60);
+            await yieldThread();
+
             const dataBersih = semuaData.map(baris => {
                 const obj = {};
                 for (const [k, v] of Object.entries(baris)) {
@@ -150,63 +260,198 @@
                 return obj;
             }).filter(b => Object.values(b).some(v => v && String(v).trim() !== ''));
 
+            // Deteksi Mode Penanganan Duplikat
+            const modeDuplikat = document.querySelector('input[name="modeDuplikat"]:checked').value;
+
+            // Simpan ke Firebase dengan Chunking (Penyimpanan Bertahap agar tidak freeze)
             if (dataBersih.length > 0) {
+                tampilkanLoading(true, `Mengecek data duplikat di Firebase...`, 65);
+                await yieldThread();
+
+                let existingData = {};
+                let existingKeys = new Set();
+
+                try {
+                    if (modeDuplikat === 'lengkap') {
+                        // Ambil seluruh isi data dari Firebase untuk penggabungan data paling lengkap
+                        const snap = await db.ref('data_kendaraan').once('value');
+                        if (snap.exists()) {
+                            existingData = snap.val() || {};
+                            existingKeys = new Set(Object.keys(existingData));
+                        }
+                    } else {
+                        // Ambil kunci saja (shallow) jika mode timpa atau abaikan agar cepat
+                        const snap = await db.ref('data_kendaraan').shallow().once('value');
+                        if (snap.exists()) {
+                            existingKeys = new Set(Object.keys(snap.val()));
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Gagal cek data terdaftar di Firebase:', e);
+                }
+
                 const batch = {};
+                let countDuplikat = 0;
+
                 dataBersih.forEach((item, idx) => {
                     const kunci = item.nomorRangka || item.noPolisi || `data_${Date.now()}_${idx}`;
-                    batch[String(kunci).replace(/[.#$/[\]]/g, '_')] = item;
+                    const keyClean = String(kunci).replace(/[.#$/[\]]/g, '_');
+
+                    const isDuplikatInFirebase = existingKeys.has(keyClean);
+                    const isDuplikatInBatch = batch.hasOwnProperty(keyClean);
+
+                    if (isDuplikatInFirebase || isDuplikatInBatch) {
+                        countDuplikat++;
+                    }
+
+                    if (modeDuplikat === 'abaikan' && isDuplikatInFirebase) {
+                        // Jika mode abaikan dan data sudah ada di Firebase -> skip
+                        return;
+                    }
+
+                    if (modeDuplikat === 'lengkap') {
+                        // Ambil data acuan (dari batch jika sudah diisi sebelumnya, atau dari Firebase)
+                        const dataAcuan = batch[keyClean] || existingData[keyClean] || {};
+                        batch[keyClean] = mergeDataTerlengkap(dataAcuan, item);
+                    } else {
+                        // Mode timpa / default
+                        batch[keyClean] = item;
+                    }
                 });
-                await db.ref('data_kendaraan').update(batch);
-                tampilkanStatus(`✅ Berhasil: ${berhasil} file, ${dataBersih.length} data tersimpan!${gagal > 0 ? ` ⚠️ ${gagal} file gagal` : ''}`, 'sukses');
+
+                // CHUNKING UPLOAD (Kirim maksimal 500 item per kirim ke Firebase)
+                const entries = Object.entries(batch);
+                const CHUNK_SIZE = 500;
+                const totalChunks = Math.ceil(entries.length / CHUNK_SIZE);
+
+                if (entries.length > 0) {
+                    for (let c = 0; c < totalChunks; c++) {
+                        const chunkEntries = entries.slice(c * CHUNK_SIZE, (c + 1) * CHUNK_SIZE);
+                        const chunkObject = Object.fromEntries(chunkEntries);
+                        
+                        const pct = 70 + Math.round(((c + 1) / totalChunks) * 30);
+                        tampilkanLoading(true, `Menyimpan ke Firebase (${(c + 1) * CHUNK_SIZE > entries.length ? entries.length : (c + 1) * CHUNK_SIZE}/${entries.length} data)...`, pct);
+                        
+                        await db.ref('data_kendaraan').update(chunkObject);
+                        await yieldThread();
+                    }
+
+                    const totalWaktu = ((performance.now() - totalAwal) / 1000).toFixed(2);
+                    const ketMode = modeDuplikat === 'lengkap' ? 'Digabungkan menjadi data terlengkap' : (modeDuplikat === 'abaikan' ? 'Dilewati' : 'Ditimpa');
+                    tampilkanStatus(`✅ Berhasil! ${berhasil} file (${entries.length} data tersimpan) dalam ${totalWaktu} detik! ℹ️ Terdeteksi ${countDuplikat} data ganda (${ketMode}).${gagal > 0 ? ` ⚠️ ${gagal} file gagal` : ''}`, 'sukses');
+                } else {
+                    tampilkanStatus(`ℹ️ Semua data (${countDuplikat} baris) ganda dan telah dilewati sesuai pengaturan mode abaikan.`, 'warning');
+                }
+
+                // Simpan dan tampilkan hasil JSON serta ringkasan
+                lastProcessedData = Object.values(batch);
+                tampilkanRingkasanDanJSON(files.length, lastProcessedData, countDuplikat);
+
+                // Auto Refresh Hitung Total Firebase setelah upload selesai
+                hitungkanTotalFirebase();
             } else {
-                tampilkanStatus('⚠️ Tidak ada data yang valid disimpan', 'warning');
+                tampilkanStatus('⚠️ Tidak ada data valid yang dapat disimpan.', 'warning');
+                document.getElementById('summaryCard').style.display = 'none';
             }
 
             tampilkanLoading(false);
+            document.getElementById('uploadBtn').disabled = false;
+            fileInput.value = ''; // Reset input
         }
 
-        function bacaXLSX(file) {
+        function tampilkanRingkasanDanJSON(totalFiles, data, totalDuplikat = 0) {
+            document.getElementById('totalFilesCount').textContent = totalFiles;
+            document.getElementById('totalRecordsCount').textContent = data.length;
+            document.getElementById('totalDuplicateCount').textContent = totalDuplikat;
+            
+            const jsonViewer = document.getElementById('jsonViewer');
+            jsonViewer.textContent = JSON.stringify(data, null, 2);
+            
+            document.getElementById('summaryCard').style.display = 'block';
+        }
+
+        function downloadJSON() {
+            if (!lastProcessedData || lastProcessedData.length === 0) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lastProcessedData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `data_kendaraan_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function copyJSON() {
+            const jsonText = document.getElementById('jsonViewer').textContent;
+            if (!jsonText) return;
+            const textArea = document.createElement('textarea');
+            textArea.value = jsonText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                tampilkanStatus('📋 Data JSON berhasil disalin ke clipboard!', 'sukses');
+            } catch (err) {
+                tampilkanStatus('❌ Gagal menyalin JSON', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function toggleJSON() {
+            const container = document.getElementById('jsonViewerContainer');
+            const btn = document.getElementById('btnToggleJson');
+            if (container.style.display === 'block') {
+                container.style.display = 'none';
+                btn.textContent = '👁️ Lihat Detail JSON';
+            } else {
+                container.style.display = 'block';
+                btn.textContent = '🙈 Sembunyikan Detail JSON';
+            }
+        }
+
+        // ⚡ OPTIMASI XLSX: Menggunakan Dense Array & Abaikan style/formula
+        function bacaXLSXFast(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = e => {
                     try {
-                        const wb = XLSX.read(e.target.result, { type: 'array' });
+                        const buffer = e.target.result;
+                        const wb = XLSX.read(buffer, {
+                            type: 'array',
+                            dense: true,         // Struktur array padat (Hemat memori & cepat)
+                            cellStyles: false,    // Abaikan style/warna sel
+                            cellFormulas: false,  // Abaikan formula kalkulasi
+                            cellDates: false,     // Matikan parse tanggal otomatis
+                            cellNFT: false        // Matikan parse token format angka
+                        });
                         const ws = wb.Sheets[wb.SheetNames[0]];
-                        resolve(XLSX.utils.sheet_to_json(ws, { defval: '' }));
+                        const data = XLSX.utils.sheet_to_json(ws, { defval: '' });
+                        resolve(data);
                     } catch (err) { reject(err); }
                 };
+                reader.onerror = err => reject(err);
                 reader.readAsArrayBuffer(file);
             });
         }
 
-        function bacaCSV(file) {
+        // ⚡ OPTIMASI CSV: Menggunakan PapaParse Library Fast Mode
+        function bacaCSVFast(file) {
             return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    try {
-                        const teks = e.target.result;
-                        const baris = teks.split(/\r?\n/).filter(b => b.trim() !== '');
-                        if (baris.length < 2) { resolve([]); return; }
-                        const pemisah = teks.includes(';') ? ';' : ',';
-                        const header = baris[0].split(pemisah).map(h => h.trim().replace(/^"|"$/g, ''));
-                        const data = [];
-                        for (let i = 1; i < baris.length; i++) {
-                            const nilai = baris[i].split(pemisah).map(n => n.trim().replace(/^"|"$/g, ''));
-                            if (nilai.every(n => n === '')) continue;
-                            const obj = {};
-                            header.forEach((k, idx) => obj[k] = nilai[idx] || '');
-                            data.push(obj);
-                        }
-                        resolve(data);
-                    } catch (err) { reject(err); }
-                };
-                reader.readAsText(file);
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    fastMode: true, // Mempercepat parse CSV standar tanpa kuotasi kompleks
+                    dynamicTyping: false,
+                    complete: (results) => resolve(results.data || []),
+                    error: (err) => reject(err)
+                });
             });
         }
 
-        async function bacaPDF(file) {
+        // ⚡ OPTIMASI PDF: Pembacaan Teks Asynchronous
+        async function bacaPDFFast(file) {
             const buf = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+            const pdf = await pdfjsLib.getDocument({ data: buf, disableFontFace: true }).promise;
             let teks = '';
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
@@ -226,9 +471,11 @@
             };
         }
 
-        function tampilkanLoading(aktif, teks) {
-            document.getElementById('loading').style.display = aktif ? 'block' : 'none';
+        function tampilkanLoading(aktif, teks, progress = 0) {
+            const loadingEl = document.getElementById('loading');
+            loadingEl.style.display = aktif ? 'block' : 'none';
             if (teks) document.getElementById('loadingText').textContent = teks;
+            if (progress) document.getElementById('progressBar').style.width = `${progress}%`;
         }
 
         function tampilkanStatus(pesan, jenis) {
@@ -237,6 +484,32 @@
             el.className = 'status ' + jenis;
             el.style.display = pesan ? 'block' : 'none';
         }
+
+        // ⚡ HITUNG TOTAL DATA REALTIME DARI FIREBASE DATABASE
+        async function hitungkanTotalFirebase() {
+            const headerEl = document.getElementById('totalFirebaseHeaderCount');
+            const summaryEl = document.getElementById('totalFirebaseCount');
+            
+            if (headerEl) headerEl.textContent = 'Memuat...';
+            if (summaryEl) summaryEl.textContent = 'Memuat...';
+
+            try {
+                // Mengambil snapshot count seluruh anak node di path 'data_kendaraan'
+                const snap = await db.ref('data_kendaraan').once('value');
+                const total = snap.exists() ? snap.numChildren() : 0;
+                const totalFormatted = total.toLocaleString('id-ID') + ' Record';
+
+                if (headerEl) headerEl.textContent = totalFormatted;
+                if (summaryEl) summaryEl.textContent = totalFormatted;
+            } catch (err) {
+                console.error('Gagal mengambil total data dari Firebase:', err);
+                if (headerEl) headerEl.textContent = 'Gagal memuat';
+                if (summaryEl) summaryEl.textContent = 'Gagal memuat';
+            }
+        }
+
+        // Otomatis jalankan pengecekan total data saat halaman pertama kali dibuka
+        window.addEventListener('DOMContentLoaded', hitungkanTotalFirebase);
     </script>
 </body>
 </html>
