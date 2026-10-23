@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Unggah Data Kendaraan - Complete 15 Fields Multi-Alias Mapper</title>
+    <title>Unggah Data Kendaraan - Fast Import Studio Pro</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,18 +20,19 @@
     <!-- PapaParse (CSV Fast Parser) -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
+    <!-- Chart.js for Analytics Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --bg-dark: #0e1117;
-            --card-bg: #161b22;
-            --card-border: #30363d;
-            --primary-red: #dc2626;
-            --primary-red-hover: #b91c1c;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --accent-blue: #3b82f6;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --card-border: #333333;
+            --primary-red: #e50914;
+            --primary-red-hover: #b90710;
+            --accent-red: #ff4444;
+            --text-main: #e0e0e0;
+            --text-muted: #9e9e9e;
         }
 
         body {
@@ -47,10 +48,10 @@
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0d1117;
+            background: #121212;
         }
         ::-webkit-scrollbar-thumb {
-            background: #30363d;
+            background: #333333;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
@@ -58,8 +59,8 @@
         }
 
         .dropzone-active {
-            background-color: rgba(220, 38, 38, 0.15) !important;
-            border-color: #f87171 !important;
+            background-color: rgba(229, 9, 20, 0.15) !important;
+            border-color: #ff4444 !important;
             transform: scale(0.99);
         }
 
@@ -67,10 +68,10 @@
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
-        .log-info { color: #9ca3af; }
-        .log-success { color: #34d399; font-weight: 600; }
-        .log-warn { color: #fbbf24; font-weight: 600; }
-        .log-err { color: #f87171; font-weight: bold; }
+        .log-info { color: #9e9e9e; }
+        .log-success { color: #4caf50; font-weight: 600; }
+        .log-warn { color: #ffb74d; font-weight: 600; }
+        .log-err { color: #ff5252; font-weight: bold; }
 
         th {
             position: sticky;
@@ -83,191 +84,259 @@
 
     <div class="max-w-7xl mx-auto space-y-5">
         
-        <!-- App Header Bar -->
-        <header class="bg-[#161b22] border border-[#30363d] rounded-xl p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
+        <!-- Header Bar -->
+        <header class="bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
             <div class="flex items-center gap-3">
                 <div class="bg-red-600/20 p-3 rounded-xl border border-red-500/30 text-2xl">
-                    🔥
+                    📊
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-                        Unggah Data Kendaraan <span class="text-red-500 text-sm block sm:inline font-semibold">(Complete 15 Fields Multi-Alias)</span>
+                        Fast Import Studio Pro <span class="text-red-500 text-sm block sm:inline font-semibold">(Analytics Dashboard & 15 Fields)</span>
                     </h1>
-                    <p class="text-xs text-gray-400 mt-0.5">Mendukung Nopol, Noka, Nosin, BPKB, STNK, NIK, Nama, MSSDN, Pekerjaan, Merek, Type, Warna, Tahun, Cylinder, BBM</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Cloud Firestore 'pencarian' + Analisis Distribusi Kendaraan R2/R4 + Audit Uploader</p>
                 </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-                <div class="bg-[#0d1117] border border-[#30363d] px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2">
+                <div class="bg-[#121212] border border-[#333333] px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2">
                     <span id="firestoreStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Firestore ('pencarian'):</span>
+                    <span>Status Cloud:</span>
                     <strong id="headerFirestoreCount" class="text-amber-400 font-bold">Memeriksa...</strong>
                 </div>
-                <button onclick="cekTotalDatabaseCloud()" class="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-gray-200 text-xs px-3 py-2 rounded-lg font-semibold transition active:scale-95">
+                <button onclick="cekTotalDatabaseCloud()" class="bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-200 text-xs px-3 py-2 rounded-lg font-semibold transition active:scale-95">
                     🔄 Refresh Status
                 </button>
             </div>
         </header>
 
-        <!-- Firestore Compatibility Notification Banner -->
-        <div class="bg-gradient-to-r from-red-950/80 to-[#161b22] border border-red-500/40 rounded-xl p-4 shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
-            <div class="text-xs text-gray-200 leading-relaxed">
-                <span class="font-bold text-red-400 block text-sm mb-0.5">🎯 INTEGRASI 15 FIELD LENGKAP APLIKASI LAIN:</span>
-                Setiap dokumen Firestore di koleksi <code class="bg-[#0d1117] px-1.5 py-0.5 rounded border border-red-500/30 text-amber-300 font-mono">db.collection('pencarian')</code> secara otomatis menyimpan variasi field baku:
-                <div class="flex flex-wrap gap-1 mt-1 font-mono text-[10px]">
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NO.PLAT</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">MEREK</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">TYPE</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">TAHUN</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">WARNA</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">CYLINDER</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NAMA BBM</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NOKA</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NOSIN</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NO. BPKB</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NO. STNK</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NAMA</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">NIK</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">MSSDN</span>
-                    <span class="bg-[#0d1117] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">PEKERJAAN</span>
+        <!-- Petugas / Uploader Identity Card -->
+        <div class="bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex-1 w-full">
+                <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1 flex items-center gap-2">
+                    👤 NAMA PETUGAS / PENGUNGGAH <span class="text-red-500 text-xs font-normal">(Disimpan di Metadata `diupload_oleh`)</span>
+                </label>
+                <div class="relative">
+                    <input type="text" id="inputNamaPetugas" oninput="simpanNamaPetugasLokal()" placeholder="Ketik Nama Anda (misal: Admin 01 / Hendra)..." 
+                           class="w-full bg-[#121212] border border-[#333333] text-white text-xs px-3 py-2.5 rounded-lg focus:outline-none focus:border-red-500 transition font-semibold">
+                    <span id="lblPetugasSaved" class="absolute right-3 top-2.5 text-[10px] text-emerald-400 font-semibold hidden">
+                        ✓ Tersimpan
+                    </span>
                 </div>
             </div>
-            <button onclick="jalankanDemoFirestore1Click()" class="w-full lg:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition active:scale-95 whitespace-nowrap shadow-md flex items-center justify-center gap-1.5">
-                🧪 TES 1-CLICK DEMO (LENGKAP 15 FIELD)
-            </button>
+            <div class="text-[11px] text-gray-400 bg-[#121212] p-3 rounded-lg border border-[#333333] w-full md:w-auto leading-relaxed">
+                <strong class="text-red-400 block mb-0.5">📌 TAG AUDIT DOKUMEN:</strong>
+                Setiap data di Firestore menyertakan field: <code class="text-amber-300">diupload_oleh</code>, <code class="text-amber-300">waktu_unggah</code>, dan <code class="text-amber-300">nama_file</code>.
+            </div>
         </div>
 
-        <!-- Live Diagnostic Console -->
-        <div class="bg-[#090d12] border border-[#1f2937] border-l-4 border-l-red-600 rounded-xl p-3 shadow-inner">
-            <div class="flex items-center justify-between text-xs font-semibold text-gray-400 mb-1.5 pb-1 border-b border-[#1f2937]">
+        <!-- Diagnostic Log Console Box -->
+        <div class="bg-[#0a0a0a] border border-[#222222] border-l-4 border-l-red-600 rounded-xl p-3 shadow-inner">
+            <div class="flex items-center justify-between text-xs font-semibold text-gray-400 mb-1.5 pb-1 border-b border-[#222222]">
                 <span>⚙️ LOG DIAGNOSTIK UTAMA (LIVE CONSOLE):</span>
                 <span id="txtLogCount" class="text-emerald-400 font-mono">0 Event</span>
             </div>
             <div id="debugConsole" class="text-[11px] leading-relaxed text-emerald-400 max-h-28 overflow-y-auto space-y-0.5">
-                <div>⚙️ Mengatur koneksi Cloud Firestore & Realtime Database...</div>
+                <div>⚙️ Menghubungkan ke Cloud Firestore & Realtime Database...</div>
             </div>
         </div>
 
-        <!-- Settings Box -->
-        <div class="bg-[#161b22] border border-[#30363d] rounded-xl p-4 shadow-md">
-            <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                ⚙️ Pengaturan Penanganan Data Duplikat & Impor
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div class="space-y-2">
-                    <label class="text-gray-400 font-semibold block">MODE DOKUMEN FIRESTORE ('pencarian'):</label>
-                    <div class="space-y-1.5">
-                        <label class="flex items-center gap-2 cursor-pointer text-gray-200 hover:text-white">
-                            <input type="radio" name="duplicateMode" value="merge" checked class="accent-red-600 w-4 h-4">
-                            <span>✨ <strong>Merge / Update:</strong> Memperbarui field dokumen Firestore tanpa menghapus data lama</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer text-gray-200 hover:text-white">
-                            <input type="radio" name="duplicateMode" value="overwrite" class="accent-red-600 w-4 h-4">
-                            <span>🔄 <strong>Set / Timpa:</strong> Mengganti total dokumen Firestore dengan data baru</span>
-                        </label>
-                    </div>
+        <!-- Demo & Quick Action Banner -->
+        <div class="bg-gradient-to-r from-red-950/80 to-[#1e1e1e] border border-red-500/40 rounded-xl p-4 shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+            <div class="text-xs text-gray-200 leading-relaxed">
+                <span class="font-bold text-red-400 block text-sm mb-0.5">📈 RINGKASAN DISTRIBUSI KENDARAAN & 15 FIELD LENGKAP:</span>
+                Otomatis mengklasifikasikan jenis Roda 2 vs Roda 4, Merek Terbanyak, serta Wilayah Kode Plat.
+                <div class="flex flex-wrap gap-1 mt-1 font-mono text-[10px]">
+                    <span class="bg-[#121212] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">Roda 2 vs Roda 4</span>
+                    <span class="bg-[#121212] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">Top Merek</span>
+                    <span class="bg-[#121212] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">Wilayah Kode Plat</span>
+                    <span class="bg-[#121212] text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">15 Field Multi-Alias</span>
                 </div>
+            </div>
+            <button onclick="jalankanDemo1Click()" class="w-full lg:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition active:scale-95 whitespace-nowrap shadow-md flex items-center justify-center gap-1.5">
+                🧪 TES 1-CLICK DEMO (15 FIELD + ANALYTICS & AUDIT)
+            </button>
+        </div>
 
-                <div class="space-y-2 border-t md:border-t-0 md:border-l border-[#30363d] pt-3 md:pt-0 md:pl-4">
-                    <label class="text-gray-400 font-semibold block">SINKRONISASI DATABASE DUAL:</label>
-                    <div class="space-y-1.5">
-                        <label class="flex items-center gap-2 cursor-pointer text-gray-200 hover:text-white">
-                            <input type="checkbox" id="chkSyncFirestore" checked disabled class="accent-red-600 w-4 h-4">
-                            <span class="text-emerald-400 font-bold">🔥 Cloud Firestore (`db.collection('pencarian')`) [WAJIB]</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer text-gray-200 hover:text-white">
-                            <input type="checkbox" id="chkSyncRealtime" checked class="accent-red-600 w-4 h-4">
-                            <span>⚡ Realtime Database (`data_kendaraan`)</span>
-                        </label>
-                    </div>
+        <!-- Warning Duplicate File Re-upload Box (Hidden by default) -->
+        <div id="duplicateFileWarningBox" class="hidden bg-amber-950/90 border border-amber-500/60 rounded-xl p-4 shadow-xl space-y-3">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">⚠️</span>
+                <div class="text-xs text-amber-200 leading-relaxed flex-1">
+                    <strong class="text-amber-400 block text-sm mb-1">PERINGATAN: FILE SUDAH PERNAH DIUNGGAH SEBELUMNYA!</strong>
+                    <div id="duplicateFileInfoText" class="bg-[#121212] p-2.5 rounded-lg border border-amber-500/30 font-mono text-[11px] my-1 text-gray-300 space-y-0.5"></div>
+                    Apakah Anda yakin ingin melanjutkan proses pengunggahan data ini?
                 </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-1 border-t border-amber-500/30">
+                <button onclick="batalUnggahDuplikat()" class="bg-[#2a2a2a] hover:bg-[#333333] text-gray-200 text-xs px-4 py-2 rounded-lg font-bold transition">
+                    ❌ Batal Unggah
+                </button>
+                <button onclick="lanjutUnggahDuplikat()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-4 py-2 rounded-lg font-bold transition shadow-md">
+                    ⚠️ Tetap Lanjutkan Upload
+                </button>
             </div>
         </div>
 
         <!-- Upload Dropzone Area -->
         <div id="dropZone" onclick="document.getElementById('fileInput').click()" 
-             class="border-2 border-dashed border-red-600/70 bg-[#161b22]/90 hover:bg-red-950/20 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 shadow-xl group">
+             class="border-2 border-dashed border-red-600/70 bg-[#1e1e1e] hover:bg-red-950/20 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 shadow-xl group">
             <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📥</div>
             <p class="text-base font-bold text-white group-hover:text-red-400 transition-colors">
                 Tarik & Lepas File Ke Sini atau Klik Untuk Memilih File
             </p>
-            <p class="text-xs text-gray-400 mt-1">Format Didukung: <strong>.XLSX, .XLS, dan .CSV</strong> (Auto-mapping Nopol, Noka, Nosin, BPKB, STNK, NIK, Nama, MSSDN, Pekerjaan, Merek, Type, Warna, Tahun, CC, BBM)</p>
+            <p class="text-xs text-gray-400 mt-1">Format Didukung: <strong>.XLSX, .XLS, dan .CSV</strong> (Otomatis generate statistik & audit log)</p>
             
             <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple class="hidden">
 
             <div class="mt-4 flex flex-wrap justify-center gap-2" onclick="event.stopPropagation()">
                 <button id="btnSelectFile" onclick="document.getElementById('fileInput').click()" 
-                        class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow-md transition active:scale-95 flex items-center gap-2">
+                        class="bg-[#e50914] hover:bg-[#b90710] text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow-md transition active:scale-95 flex items-center gap-2">
                     📁 PILIH FILE EXCEL / CSV
                 </button>
             </div>
         </div>
 
         <!-- Selected File List Box -->
-        <div id="fileListBox" class="hidden bg-[#0d1117] border border-[#30363d] rounded-xl p-3 text-xs space-y-2">
+        <div id="fileListBox" class="hidden bg-[#121212] border border-[#333333] rounded-xl p-3 text-xs space-y-2">
             <strong class="text-white flex items-center gap-2">📂 File Terpilih:</strong>
-            <div id="fileListContent" class="space-y-1 divide-y divide-[#21262d]"></div>
+            <div id="fileListContent" class="space-y-1 divide-y divide-[#222222]"></div>
         </div>
 
         <!-- Progress Loading State -->
-        <div id="progressCard" class="hidden bg-[#161b22] border border-[#30363d] rounded-xl p-5 text-center space-y-3">
+        <div id="progressCard" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-5 text-center space-y-3">
             <div class="w-8 h-8 border-3 border-gray-600 border-t-red-600 rounded-full animate-spin mx-auto"></div>
             <p id="loadingStatusText" class="text-sm font-semibold text-white">Memproses file...</p>
-            <div class="w-full bg-[#21262d] h-2.5 rounded-full overflow-hidden border border-[#30363d]">
+            <div class="w-full bg-[#121212] h-2.5 rounded-full overflow-hidden border border-[#333333]">
                 <div id="progressBarFill" class="bg-gradient-to-r from-red-600 to-red-400 h-full w-0 transition-all duration-200"></div>
             </div>
         </div>
 
-        <!-- Notification Banner -->
+        <!-- Notification Status Banner -->
         <div id="statusMsgBox" class="hidden p-4 rounded-xl text-xs font-medium leading-relaxed shadow-lg"></div>
 
+        <!-- FITUR BARU: ANALYTICS DASHBOARD PANEL -->
+        <div id="analyticsSection" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 sm:p-5 space-y-5 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#333333] pb-3">
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                        📈 RINGKASAN RINGKAS DISTRIBUSI KENDARAAN <span class="text-xs font-normal text-red-400">(Analytics Dashboard)</span>
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Analisis instan klasifikasi R2 vs R4, Top Merek, dan Distribusi Wilayah Kode Plat</p>
+                </div>
+                <span class="text-[11px] bg-red-950/80 text-red-300 px-2.5 py-1 rounded-md border border-red-500/30 font-semibold self-start sm:self-auto">
+                    Live Analytics
+                </span>
+            </div>
+
+            <!-- Top Metric Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-[#121212] border border-[#333333] p-3.5 rounded-xl border-l-4 border-l-red-500">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total Terbaca</div>
+                    <div id="metricTotal" class="text-2xl font-black text-white mt-1">0</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">Baris data valid</div>
+                </div>
+                <div class="bg-[#121212] border border-[#333333] p-3.5 rounded-xl border-l-4 border-l-rose-500">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Roda 2 (R2)</div>
+                    <div id="metricR2" class="text-2xl font-black text-rose-400 mt-1">0</div>
+                    <div id="metricR2Pct" class="text-[10px] text-rose-300 mt-0.5">0% dari total</div>
+                </div>
+                <div class="bg-[#121212] border border-[#333333] p-3.5 rounded-xl border-l-4 border-l-blue-500">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Roda 4 (R4)</div>
+                    <div id="metricR4" class="text-2xl font-black text-blue-400 mt-1">0</div>
+                    <div id="metricR4Pct" class="text-[10px] text-blue-300 mt-0.5">0% dari total</div>
+                </div>
+                <div class="bg-[#121212] border border-[#333333] p-3.5 rounded-xl border-l-4 border-l-emerald-500">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Wilayah Utama</div>
+                    <div id="metricTopRegion" class="text-xl font-black text-emerald-400 mt-1 truncate">-</div>
+                    <div id="metricTopRegionSub" class="text-[10px] text-emerald-300 mt-0.5">Kode plat terbanyak</div>
+                </div>
+            </div>
+
+            <!-- Analytics Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Chart 1: Donut Chart R2 vs R4 -->
+                <div class="bg-[#121212] border border-[#333333] p-4 rounded-xl flex flex-col items-center justify-between">
+                    <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 self-start">
+                        🛵 vs 🚗 Distribusi Jenis (R2 / R4)
+                    </h3>
+                    <div class="w-full max-w-[220px] aspect-square my-auto relative">
+                        <canvas id="chartTypeR2R4"></canvas>
+                    </div>
+                    <div id="lblChartTypeFooter" class="text-[11px] text-gray-400 text-center mt-2 font-mono"></div>
+                </div>
+
+                <!-- Chart 2: Top Merek Kendaraan -->
+                <div class="bg-[#121212] border border-[#333333] p-4 rounded-xl flex flex-col justify-between">
+                    <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
+                        🏆 Top 5 Merek Kendaraan Terbanyak
+                    </h3>
+                    <div class="w-full h-48 my-auto relative">
+                        <canvas id="chartBrands"></canvas>
+                    </div>
+                    <div id="lblChartBrandFooter" class="text-[11px] text-gray-400 text-center mt-2 font-mono"></div>
+                </div>
+
+                <!-- Chart 3: Wilayah Kode Plat -->
+                <div class="bg-[#121212] border border-[#333333] p-4 rounded-xl flex flex-col justify-between">
+                    <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
+                        📍 Sebaran Wilayah Kode Plat Nomor
+                    </h3>
+                    <div class="w-full h-48 my-auto relative">
+                        <canvas id="chartRegions"></canvas>
+                    </div>
+                    <div id="lblChartRegionFooter" class="text-[11px] text-gray-400 text-center mt-2 font-mono"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Stats Summary Card -->
-        <div id="statsCard" class="hidden bg-[#161b22] border border-[#30363d] rounded-xl p-4 space-y-3">
-            <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider">📊 Ringkasan Hasil Impor Firestore</h3>
+        <div id="statsCard" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider">📊 Ringkasan Hasil Impor Cloud Firestore</h3>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div class="bg-[#0d1117] border border-[#30363d] p-3 rounded-lg border-t-2 border-t-red-500">
+                <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-red-500">
                     <div id="statFiles" class="text-lg font-black text-white">0</div>
                     <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">File Diolah</div>
                 </div>
-                <div class="bg-[#0d1117] border border-[#30363d] p-3 rounded-lg border-t-2 border-t-blue-500">
+                <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-blue-500">
                     <div id="statRecords" class="text-lg font-black text-blue-400">0</div>
                     <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Kendaraan Valid</div>
                 </div>
-                <div class="bg-[#0d1117] border border-[#30363d] p-3 rounded-lg border-t-2 border-t-emerald-500">
+                <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-emerald-500">
                     <div id="statFirestoreDocs" class="text-lg font-black text-emerald-400">0</div>
                     <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Dokumen Firestore ('pencarian')</div>
                 </div>
-                <div class="bg-[#0d1117] border border-[#30363d] p-3 rounded-lg border-t-2 border-t-amber-500">
+                <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-amber-500">
                     <div id="statTotalFirestore" class="text-lg font-black text-amber-400">0</div>
                     <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Total Cloud Firestore</div>
                 </div>
             </div>
             <div class="flex gap-2 pt-1">
-                <button onclick="unduhJSON()" class="flex-1 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-gray-200 text-xs py-2 rounded-lg font-semibold transition">
+                <button onclick="unduhJSON()" class="flex-1 bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-200 text-xs py-2 rounded-lg font-semibold transition">
                     📥 Unduh Hasil JSON
                 </button>
-                <button onclick="salinJSON()" class="flex-1 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-gray-200 text-xs py-2 rounded-lg font-semibold transition">
+                <button onclick="salinJSON()" class="flex-1 bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-200 text-xs py-2 rounded-lg font-semibold transition">
                     📋 Salin Text JSON
                 </button>
             </div>
         </div>
 
         <!-- Live Preview Table Card -->
-        <div id="tablePreviewCard" class="hidden bg-[#161b22] border border-[#30363d] rounded-xl p-4 space-y-3">
+        <div id="tablePreviewCard" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                    👁️ Preview Field Standar Target (<span id="txtTableRecordCount" class="text-red-400">0</span> Kendaraan)
+                    👁️ Preview Field Kendaraan + Audit Tag (<span id="txtTableRecordCount" class="text-red-400">0</span> Kendaraan)
                 </h3>
-                <input type="text" id="inputTableSearch" onkeyup="cariTableData()" placeholder="🔍 Cari Plat / Noka / Nosin / Nama / BPKB..." 
-                       class="bg-[#0d1117] border border-[#30363d] text-white text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-red-500 w-full sm:w-64">
+                <input type="text" id="inputTableSearch" onkeyup="cariTableData()" placeholder="🔍 Cari Plat / Merek / Type / Petugas..." 
+                       class="bg-[#121212] border border-[#333333] text-white text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-red-500 w-full sm:w-64">
             </div>
 
-            <div class="overflow-x-auto border border-[#30363d] rounded-lg max-h-96">
+            <div class="overflow-x-auto border border-[#333333] rounded-lg max-h-96">
                 <table class="w-full text-left text-[11px] text-gray-300 whitespace-nowrap">
-                    <thead class="bg-[#21262d] text-white font-bold border-b border-[#30363d]">
+                    <thead class="bg-[#2a2a2a] text-white font-bold border-b border-[#333333]">
                         <tr>
                             <th class="p-2.5">#</th>
-                            <th class="p-2.5">NO.PLAT (`NO.PLAT`)</th>
+                            <th class="p-2.5">NO.PLAT</th>
                             <th class="p-2.5">MEREK</th>
                             <th class="p-2.5">TYPE</th>
                             <th class="p-2.5">TAHUN</th>
@@ -282,9 +351,12 @@
                             <th class="p-2.5">NIK</th>
                             <th class="p-2.5">MSSDN</th>
                             <th class="p-2.5">PEKERJAAN</th>
+                            <th class="p-2.5 bg-red-950/60 text-red-300">DIUPLOAD OLEH</th>
+                            <th class="p-2.5 bg-red-950/60 text-red-300">WAKTU UNGGAH</th>
+                            <th class="p-2.5 bg-red-950/60 text-red-300">NAMA FILE</th>
                         </tr>
                     </thead>
-                    <tbody id="previewTableBody" class="divide-y divide-[#21262d]">
+                    <tbody id="previewTableBody" class="divide-y divide-[#222222]">
                         <!-- Dynamic rows -->
                     </tbody>
                 </table>
@@ -293,8 +365,8 @@
             <div class="flex items-center justify-between text-xs text-gray-400 pt-1">
                 <span id="txtPageIndicator">Halaman 1 dari 1</span>
                 <div class="flex gap-1">
-                    <button id="btnPagePrev" onclick="gantiHalamanTable(-1)" class="bg-[#21262d] hover:bg-[#30363d] px-3 py-1 rounded text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed">◀ Prev</button>
-                    <button id="btnPageNext" onclick="gantiHalamanTable(1)" class="bg-[#21262d] hover:bg-[#30363d] px-3 py-1 rounded text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed">Next ▶</button>
+                    <button id="btnPagePrev" onclick="gantiHalamanTable(-1)" class="bg-[#2a2a2a] hover:bg-[#333333] px-3 py-1 rounded text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed">◀ Prev</button>
+                    <button id="btnPageNext" onclick="gantiHalamanTable(1)" class="bg-[#2a2a2a] hover:bg-[#333333] px-3 py-1 rounded text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed">Next ▶</button>
                 </div>
             </div>
         </div>
@@ -305,7 +377,7 @@
     <div id="toastBox" class="fixed bottom-5 right-5 bg-red-600 text-white font-bold text-xs px-4 py-3 rounded-lg shadow-2xl hidden z-50 transition-all"></div>
 
     <script class="notranslate">
-        // Global Error Console Tracking
+        // Global Error Tracking
         let logCounter = 0;
         window.onerror = function(msg, url, lineNo) {
             logDiag(`❌ RUNTIME ERROR: ${msg} (Baris: ${lineNo})`, 'err');
@@ -336,7 +408,7 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        // Firebase Config
+        // Firebase Config Singapore
         const firebaseConfig = {
             apiKey: "AIzaSyBonuHp4nd-YZKwV5IM_2HRCfJ2TQ4zJaY",
             authDomain: "gen-lang-client-0221970857.firebaseapp.com",
@@ -350,14 +422,49 @@
         let dbRealtime = null;
         let dbFirestore = null;
 
-        // Global Data State
+        // Global State
         let globalProcessedData = [];
         let globalFilteredTableData = [];
         let currentTablePage = 1;
         const rowsPerPage = 15;
+        let pendingDuplicateUploadPayload = null;
+
+        // Chart.js Global Instances
+        let chartR2R4Instance = null;
+        let chartBrandsInstance = null;
+        let chartRegionsInstance = null;
+
+        // Region Code Dictionary
+        const regionLookup = {
+            'BM': 'Riau',
+            'B': 'DKI Jakarta / Depok / Bekasi',
+            'BK': 'Sumatera Utara (Medan)',
+            'BL': 'Aceh',
+            'D': 'Bandung / Jawa Barat',
+            'BA': 'Sumatera Barat',
+            'BE': 'Lampung',
+            'BG': 'Sumatera Selatan (Palembang)',
+            'BH': 'Jambi',
+            'BD': 'Bengkulu',
+            'L': 'Surabaya / Jawa Timur',
+            'DK': 'Bali',
+            'DH': 'NTT',
+            'DE': 'Maluku',
+            'DD': 'Sulawesi Selatan (Makassar)',
+            'KT': 'Kalimantan Timur',
+            'KB': 'Kalimantan Barat',
+            'DA': 'Kalimantan Selatan'
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
-            logDiag("Menginisialisasi Firebase SDK...");
+            logDiag("Menginisialisasi Firebase SDK & Chart.js...");
+
+            // Restore uploader name from localStorage
+            const savedPetugas = localStorage.getItem('nama_petugas_kendaraan') || '';
+            if (savedPetugas) {
+                document.getElementById('inputNamaPetugas').value = savedPetugas;
+                document.getElementById('lblPetugasSaved').classList.remove('hidden');
+            }
 
             if (typeof firebase === 'undefined') {
                 logDiag("❌ Gagal memuat SDK Firebase dari CDN!", 'err');
@@ -368,8 +475,7 @@
                     dbFirestore = firebase.firestore();
                     
                     logDiag("✅ Firebase Inisialisasi Sukses!", 'success');
-                    logDiag("🔥 Cloud Firestore Collection: 'pencarian' SIAP!", 'success');
-                    logDiag("⚡ Realtime Database: 'data_kendaraan' SIAP!", 'success');
+                    logDiag("🔥 Cloud Firestore Collection 'pencarian' & 'history_uploads' SIAP!", 'success');
 
                     document.getElementById('firestoreStatusDot').className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
                     cekTotalDatabaseCloud();
@@ -380,6 +486,22 @@
 
             setupDropzone();
         });
+
+        function simpanNamaPetugasLokal() {
+            const val = document.getElementById('inputNamaPetugas').value.trim();
+            if (val) {
+                localStorage.setItem('nama_petugas_kendaraan', val);
+                document.getElementById('lblPetugasSaved').classList.remove('hidden');
+            } else {
+                localStorage.removeItem('nama_petugas_kendaraan');
+                document.getElementById('lblPetugasSaved').classList.add('hidden');
+            }
+        }
+
+        function getNamaPetugasActive() {
+            const val = document.getElementById('inputNamaPetugas').value.trim();
+            return val || "PETUGAS_ANONIM";
+        }
 
         function setupDropzone() {
             const dropZone = document.getElementById('dropZone');
@@ -407,62 +529,37 @@
             fileInput.addEventListener('change', (e) => prosesImportFile(Array.from(e.target.files)));
         }
 
-        // Clean Search Key Function (queryClean: uppercase without spaces)
         function makeQueryClean(str) {
             if (!str) return '';
             return String(str).replace(/\s+/g, '').toUpperCase();
         }
 
-        const delayAsync = (ms = 25) => new Promise(res => setTimeout(res, ms));
-
-        // 1-Click Demo Test with ALL 15 FIELDS
-        async function jalankanDemoFirestore1Click() {
-            logDiag("🚀 Menjalankan Tes Demo Firestore 15 Field Lengkap...", 'warn');
-            const demoData = [
-                { 
-                    "NO.PLAT": "BM 9569 TK", 
-                    "MEREK": "TOYOTA", 
-                    "TYPE": "HILUX 2.5 G", 
-                    "TAHUN": "2018", 
-                    "WARNA": "HITAM METALLIK", 
-                    "CYLINDER": "2494 CC", 
-                    "NAMA BBM": "SOLAR", 
-                    "NOKA": "MR0FR22G0C0619144", 
-                    "NOSIN": "2KDS092147", 
-                    "NO. BPKB": "L-12345678", 
-                    "NO. STNK": "9876543/STNK", 
-                    "NAMA": "HERMAN WIJAYA", 
-                    "NIK": "1471021508850003", 
-                    "MSSDN": "081266554433", 
-                    "PEKERJAAN": "WIRASWASTA",
-                    "ALAMAT": "JL. SUDIRMAN NO. 45 PEKANBARU"
-                },
-                { 
-                    "NO.PLAT": "B 1234 ABC", 
-                    "MEREK": "HONDA", 
-                    "TYPE": "VARIO 160 ABS", 
-                    "TAHUN": "2022", 
-                    "WARNA": "MERAH DOFF", 
-                    "CYLINDER": "157 CC", 
-                    "NAMA BBM": "PERTAMAX", 
-                    "NOKA": "MH1J2K34567891011", 
-                    "NOSIN": "J2K3E1234567", 
-                    "NO. BPKB": "K-88776655", 
-                    "NO. STNK": "1122334/STNK", 
-                    "NAMA": "BUDI SANTOSO", 
-                    "NIK": "3171012345670001", 
-                    "MSSDN": "081234567890", 
-                    "PEKERJAAN": "KARYAWAN SWASTA",
-                    "ALAMAT": "JL. GATOT SUBROTO JAKARTA"
-                }
-            ];
-            await eksekusiPengolahanDanUpload(demoData, [{ name: "Demo_Complete_15Fields.xlsx", size: 4500 }]);
+        function makeFileHashKey(fileName, fileSize) {
+            const cleanName = fileName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            return `file_${cleanName}_${fileSize}`;
         }
 
-        // Main File Import Processing
+        const delayAsync = (ms = 25) => new Promise(res => setTimeout(res, ms));
+
+        // 1-Click Demo Test
+        async function jalankanDemo1Click() {
+            logDiag("🚀 Menjalankan Tes Demo 15 Field + Analytics + Audit...", 'warn');
+            const demoData = [
+                { "NO.PLAT": "BM 9569 TK", "MEREK": "TOYOTA", "TYPE": "AVANZA 1.3 G", "TAHUN": "2020", "WARNA": "HITAM", "CYLINDER": "1300 CC", "NAMA BBM": "BENSIN", "NOKA": "MR0FR22G0C0619144", "NOSIN": "2KDS092147", "NO. BPKB": "L-12345678", "NO. STNK": "9876543/STNK", "NAMA": "HERMAN WIJAYA", "NIK": "1471021508850003", "MSSDN": "081266554433", "PEKERJAAN": "WIRASWASTA" },
+                { "NO.PLAT": "B 1234 ABC", "MEREK": "HONDA", "TYPE": "VARIO 160 ABS", "TAHUN": "2022", "WARNA": "MERAH", "CYLINDER": "157 CC", "NAMA BBM": "PERTAMAX", "NOKA": "MH1J2K34567891011", "NOSIN": "J2K3E1234567", "NO. BPKB": "K-88776655", "NO. STNK": "1122334/STNK", "NAMA": "BUDI SANTOSO", "NIK": "3171012345670001", "MSSDN": "081234567890", "PEKERJAAN": "KARYAWAN SWASTA" },
+                { "NO.PLAT": "BK 4455 XYZ", "MEREK": "YAMAHA", "TYPE": "NMAX 155", "TAHUN": "2021", "WARNA": "HITAM DOFF", "CYLINDER": "155 CC", "NAMA BBM": "BENSIN", "NOKA": "MH3SG311029384", "NOSIN": "G3E1E982123", "NO. BPKB": "BPKB-889911", "NO. STNK": "STNK-992211", "NAMA": "SITI AMINAH", "NIK": "1271025501900004", "MSSDN": "081399887766", "PEKERJAAN": "PNS" },
+                { "NO.PLAT": "BM 7711 AA", "MEREK": "HONDA", "TYPE": "BEAT STREET", "TAHUN": "2023", "WARNA": "SILVER", "CYLINDER": "110 CC", "NAMA BBM": "PERTALITE", "NOKA": "MH1JM3120PK112", "NOSIN": "JM31E19283", "NO. BPKB": "L-998811", "NO. STNK": "882211/STNK", "NAMA": "RUDI HARTONO", "NIK": "1471051203920002", "MSSDN": "085211223344", "PEKERJAAN": "WIRASWASTA" },
+                { "NO.PLAT": "D 8821 BB", "MEREK": "MITSUBISHI", "TYPE": "PAJERO SPORT 2.4", "TAHUN": "2021", "WARNA": "PUTIH", "CYLINDER": "2442 CC", "NAMA BBM": "SOLAR", "NOKA": "MMBJRKS40MD992", "NOSIN": "4N15C19283", "NO. BPKB": "D-11223344", "NO. STNK": "D-998877", "NAMA": "HENDRA WIJAYA", "NIK": "3273011211880005", "MSSDN": "081122334455", "PEKERJAAN": "DIREKTUR" },
+                { "NO.PLAT": "BL 3321 CA", "MEREK": "SUZUKI", "TYPE": "CARRY PICK UP", "TAHUN": "2019", "WARNA": "HITAM", "CYLINDER": "1498 CC", "NAMA BBM": "BENSIN", "NOKA": "MHYESL415JJ221", "NOSIN": "K15BC10293", "NO. BPKB": "BL-445566", "NO. STNK": "BL-112233", "NAMA": "RAHMAT HIDAYAT", "NIK": "1171010101800002", "MSSDN": "082344556677", "PEKERJAAN": "PEDAGANG" }
+            ];
+            await eksekusiPengolahanDanUpload(demoData, [{ name: "Demo_Mixed_R2_R4_Dataset.xlsx", size: 8500 }]);
+        }
+
+        // Main File Import Processing & Check History Uploads
         async function prosesImportFile(files) {
             if (!files || files.length === 0) return;
             document.getElementById('btnSelectFile').disabled = true;
+            document.getElementById('duplicateFileWarningBox').classList.add('hidden');
 
             try {
                 const fileListBox = document.getElementById('fileListBox');
@@ -475,15 +572,36 @@
                     </div>`
                 ).join('');
 
-                updateProgressUI(true, `Membaca ${files.length} file spreadsheet...`, 15);
+                updateProgressUI(true, `Memeriksa riwayat upload file di Firestore...`, 10);
                 setMsgStatus('', '');
 
+                // ANTI-DUPLICATE CHECK VIA FIRESTORE collection('history_uploads')
+                let foundDuplicate = false;
+                let dupInfoHtml = '';
+
+                for (const f of files) {
+                    const fileKey = makeFileHashKey(f.name, f.size);
+                    if (dbFirestore) {
+                        try {
+                            const historySnap = await dbFirestore.collection('history_uploads').doc(fileKey).get();
+                            if (historySnap.exists) {
+                                const dupData = historySnap.data();
+                                foundDuplicate = true;
+                                dupInfoHtml += `• File <strong>${f.name}</strong> sudah pernah diunggah oleh <strong>${dupData.diupload_oleh || 'Petugas'}</strong> pada <strong>${dupData.waktu_unggah || '-'}</strong> (${dupData.jumlah_baris || 0} data).<br>`;
+                                logDiag(`⚠️ DUPLIKAT DETECTED: File ${f.name} sudah ada di history_uploads`, 'warn');
+                            }
+                        } catch (e) {
+                            logDiag(`Warning history check: ${e.message}`, 'warn');
+                        }
+                    }
+                }
+
+                // Parse Excel/CSV content
+                updateProgressUI(true, `Membaca isi file spreadsheet...`, 25);
                 const semuaDataRaw = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     const ext = file.name.split('.').pop().toLowerCase();
-                    updateProgressUI(true, `Membaca (${i+1}/${files.length}): ${file.name}`, 20 + (i * 20));
-                    await delayAsync();
 
                     try {
                         let parsedRows = [];
@@ -495,7 +613,6 @@
 
                         if (parsedRows && parsedRows.length > 0) {
                             semuaDataRaw.push(...parsedRows);
-                            logDiag(`✅ ${file.name}: Terbaca ${parsedRows.length} baris data.`, 'success');
                         }
                     } catch (err) {
                         logDiag(`❌ Gagal membaca ${file.name}: ${err.message}`, 'err');
@@ -504,6 +621,18 @@
 
                 if (semuaDataRaw.length === 0) {
                     setMsgStatus("⚠️ Tidak ada data valid yang dapat dibaca dari file.", "warning");
+                    updateProgressUI(false);
+                    document.getElementById('btnSelectFile').disabled = false;
+                    return;
+                }
+
+                if (foundDuplicate) {
+                    updateProgressUI(false);
+                    document.getElementById('duplicateFileInfoText').innerHTML = dupInfoHtml;
+                    document.getElementById('duplicateFileWarningBox').classList.remove('hidden');
+                    
+                    // Save payload pending user decision
+                    pendingDuplicateUploadPayload = { dataRaw: semuaDataRaw, files: files };
                     return;
                 }
 
@@ -512,14 +641,32 @@
             } catch (err) {
                 logDiag(`❌ Fatal Error: ${err.message}`, 'err');
                 setMsgStatus(`❌ Terjadi Kesalahan: ${err.message}`, 'error');
-            } finally {
                 updateProgressUI(false);
                 document.getElementById('btnSelectFile').disabled = false;
+            } finally {
                 document.getElementById('fileInput').value = '';
             }
         }
 
-        // Fast Excel Parsing
+        async function lanjutUnggahDuplikat() {
+            document.getElementById('duplicateFileWarningBox').classList.add('hidden');
+            if (pendingDuplicateUploadPayload) {
+                const { dataRaw, files } = pendingDuplicateUploadPayload;
+                pendingDuplicateUploadPayload = null;
+                await eksekusiPengolahanDanUpload(dataRaw, files);
+            }
+            document.getElementById('btnSelectFile').disabled = false;
+        }
+
+        function batalUnggahDuplikat() {
+            document.getElementById('duplicateFileWarningBox').classList.add('hidden');
+            pendingDuplicateUploadPayload = null;
+            updateProgressUI(false);
+            document.getElementById('btnSelectFile').disabled = false;
+            logDiag("Proses upload dibatalkan oleh pengguna.", 'info');
+            showToast("Upload Dibatalkan");
+        }
+
         async function fastReadXLSX(file) {
             const buf = await file.arrayBuffer();
             const wb = XLSX.read(buf, { type: 'array', cellStyles: false, cellFormulas: false, cellDates: false });
@@ -564,144 +711,290 @@
             });
         }
 
-        // CORE ENGINE: Process Data & Build All 15 Fields with Multi-Alias Payload
+        // CORE CLASSIFICATION LOGIC FOR RODA 2 VS RODA 4
+        function klasifikasiR2atauR4(merek, tipe, cylinder) {
+            const combined = `${merek} ${tipe}`.toUpperCase();
+            
+            const r2Keywords = ['BEAT', 'VARIO', 'NMAX', 'AEROX', 'MIO', 'SCOOPY', 'SUPRA', 'JUPITER', 'NINJA', 'CBR', 'R15', 'KLX', 'VESPA', 'PCX', 'SATRIA', 'RX KING', 'VEGA', 'VERZA', 'VIXION', 'MOTOR', 'R2', 'RODA 2', 'SEPEDA MOTOR'];
+            const r4Keywords = ['AVANZA', 'INNOVA', 'FORTUNER', 'PAJERO', 'BRIO', 'JAZZ', 'CRV', 'HRV', 'XPENDER', 'CARRY', 'L300', 'TRUK', 'PICKUP', 'PICK UP', 'MOBIL', 'R4', 'XENIA', 'CALYA', 'SIGRA', 'TERIOS', 'RUSH', 'AGYA', 'AYLA', 'ALPHARD', 'CIVIC', 'COROLLA', 'CAMRY', 'TRUCK'];
+
+            for (let kw of r2Keywords) {
+                if (combined.includes(kw)) return 'R2';
+            }
+            for (let kw of r4Keywords) {
+                if (combined.includes(kw)) return 'R4';
+            }
+
+            // Check Cylinder / CC
+            let ccVal = parseInt(String(cylinder).replace(/[^0-9]/g, ''));
+            if (!isNaN(ccVal) && ccVal > 0) {
+                if (ccVal <= 250 && (merek.includes('HONDA') || merek.includes('YAMAHA') || merek.includes('SUZUKI') || merek.includes('KAWASAKI'))) {
+                    return 'R2';
+                }
+            }
+
+            if (merek.includes('YAMAHA') || merek.includes('KAWASAKI')) return 'R2';
+            if (merek.includes('TOYOTA') || merek.includes('MITSUBISHI') || merek.includes('DAIHATSU') || merek.includes('ISUZU') || merek.includes('NISSAN') || merek.includes('HYUNDAI')) return 'R4';
+
+            return 'R4'; // fallback
+        }
+
+        function ekstrakKodePlat(nopol) {
+            if (!nopol) return 'LAIN';
+            const clean = String(nopol).trim().toUpperCase();
+            const match = clean.match(/^([A-Z]{1,2})\s*\d+/);
+            if (match && match[1]) {
+                return match[1];
+            }
+            return 'LAIN';
+        }
+
+        // FITUR BARU: GENERATE ANALYTICS DASHBOARD CHARTS
+        function generateAnalyticsDashboard(processedVehicles) {
+            const total = processedVehicles.length;
+            if (total === 0) {
+                document.getElementById('analyticsSection').classList.add('hidden');
+                return;
+            }
+
+            let countR2 = 0;
+            let countR4 = 0;
+            const brandMap = {};
+            const regionMap = {};
+
+            processedVehicles.forEach(item => {
+                const doc = item.docData;
+                const m = doc["MEREK"] || "TIDAK DIKETAHUI";
+                const t = doc["TYPE"] || "";
+                const c = doc["CYLINDER"] || "";
+                const p = doc["NO.PLAT"] || "";
+
+                // 1. Classification R2 vs R4
+                const jenis = klasifikasiR2atauR4(m, t, c);
+                if (jenis === 'R2') countR2++; else countR4++;
+
+                // 2. Brand Aggregation
+                const brandClean = m.trim().toUpperCase() || "LAINNYA";
+                brandMap[brandClean] = (brandMap[brandClean] || 0) + 1;
+
+                // 3. Region Plate Aggregation
+                const prefix = ekstrakKodePlat(p);
+                regionMap[prefix] = (regionMap[prefix] || 0) + 1;
+            });
+
+            // Update Top Metric Cards
+            document.getElementById('metricTotal').textContent = total.toLocaleString('id-ID');
+            document.getElementById('metricR2').textContent = countR2.toLocaleString('id-ID');
+            document.getElementById('metricR4').textContent = countR4.toLocaleString('id-ID');
+            
+            const r2Pct = Math.round((countR2 / total) * 100);
+            const r4Pct = Math.round((countR4 / total) * 100);
+            document.getElementById('metricR2Pct').textContent = `${r2Pct}% dari total`;
+            document.getElementById('metricR4Pct').textContent = `${r4Pct}% dari total`;
+
+            // Find Top Region
+            let topRegionCode = "-";
+            let topRegionCount = 0;
+            for (let [code, count] of Object.entries(regionMap)) {
+                if (count > topRegionCount) {
+                    topRegionCount = count;
+                    topRegionCode = code;
+                }
+            }
+            const topRegionDesc = regionLookup[topRegionCode] ? `${regionLookup[topRegionCode]}` : `Wilayah Plat ${topRegionCode}`;
+            document.getElementById('metricTopRegion').textContent = `${topRegionCode} (${topRegionCount})`;
+            document.getElementById('metricTopRegionSub').textContent = topRegionDesc;
+
+            // Render Chart 1: Donut R2 vs R4
+            const ctxR2R4 = document.getElementById('chartTypeR2R4').getContext('2d');
+            if (chartR2R4Instance) chartR2R4Instance.destroy();
+            chartR2R4Instance = new Chart(ctxR2R4, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Roda 2 (R2)', 'Roda 4 (R4)'],
+                    datasets: [{
+                        data: [countR2, countR4],
+                        backgroundColor: ['#f43f5e', '#3b82f6'],
+                        borderColor: '#1e1e1e',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#e0e0e0', font: { size: 11 } } }
+                    }
+                }
+            });
+            document.getElementById('lblChartTypeFooter').textContent = `R2: ${countR2} (${r2Pct}%) | R4: ${countR4} (${r4Pct}%)`;
+
+            // Render Chart 2: Top Brands
+            const sortedBrands = Object.entries(brandMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+            const brandLabels = sortedBrands.map(b => b[0]);
+            const brandCounts = sortedBrands.map(b => b[1]);
+
+            const ctxBrands = document.getElementById('chartBrands').getContext('2d');
+            if (chartBrandsInstance) chartBrandsInstance.destroy();
+            chartBrandsInstance = new Chart(ctxBrands, {
+                type: 'bar',
+                data: {
+                    labels: brandLabels,
+                    datasets: [{
+                        label: 'Jumlah Kendaraan',
+                        data: brandCounts,
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9e9e9e', font: { size: 10 } }, grid: { color: '#222' } },
+                        y: { ticks: { color: '#e0e0e0', font: { size: 11, weight: 'bold' } }, grid: { display: false } }
+                    }
+                }
+            });
+            document.getElementById('lblChartBrandFooter').textContent = `Top Brand: ${brandLabels[0] || '-'} (${brandCounts[0] || 0} unit)`;
+
+            // Render Chart 3: Regions
+            const sortedRegions = Object.entries(regionMap).sort((a,b) => b[1] - a[1]).slice(0, 6);
+            const regionLabels = sortedRegions.map(r => r[0]);
+            const regionCounts = sortedRegions.map(r => r[1]);
+
+            const ctxRegions = document.getElementById('chartRegions').getContext('2d');
+            if (chartRegionsInstance) chartRegionsInstance.destroy();
+            chartRegionsInstance = new Chart(ctxRegions, {
+                type: 'bar',
+                data: {
+                    labels: regionLabels,
+                    datasets: [{
+                        label: 'Total Kendaraan',
+                        data: regionCounts,
+                        backgroundColor: '#10b981',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#e0e0e0', font: { size: 11, weight: 'bold' } }, grid: { display: false } },
+                        y: { ticks: { color: '#9e9e9e', font: { size: 10 } }, grid: { color: '#222' } }
+                    }
+                }
+            });
+            document.getElementById('lblChartRegionFooter').textContent = `Dominasi Plat: ${sortedRegions[0] ? sortedRegions[0][0] : '-'} (${sortedRegions[0] ? sortedRegions[0][1] : 0} unit)`;
+
+            document.getElementById('analyticsSection').classList.remove('hidden');
+        }
+
+        // CORE ENGINE: Process Data, Build 15 Fields Payload + Audit Metadata
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
-            updateProgressUI(true, `Membangun dokumen Firestore Multi-Field 15 Variabel...`, 50);
+            updateProgressUI(true, `Menyusun dokumen Firestore Multi-Field 15 Variabel...`, 50);
             await delayAsync();
+
+            const namaPetugasActive = getNamaPetugasActive();
+            const waktuUploadISO = new Date().toISOString();
+            const waktuUploadLocale = new Date().toLocaleString('id-ID');
+            const primaryFileName = files && files[0] ? files[0].name : "Unknown_File.xlsx";
 
             const processedVehicles = [];
 
             semuaDataRaw.forEach((row, idx) => {
                 let nopol = "", merk = "", tipe = "", tahun = "", warna = "", cylinder = "", bbm = "";
                 let noka = "", nosin = "", bpkb = "", stnk = "";
-                let nama = "", nik = "", mssdn = "", pekerjaan = "", alamat = "";
+                let nama = "", nik = "", mssdn = "", pekerjaan = "";
 
-                // Extract values from Excel/CSV headers flexibly
+                // Extract values from Excel/CSV headers
                 for (let [k, v] of Object.entries(row)) {
                     if (v === undefined || v === null) continue;
                     const val = String(v).trim().toUpperCase();
                     const keyClean = String(k).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-                    // Nopol / Plat
                     if (keyClean.includes('nopol') || keyClean.includes('polisi') || keyClean.includes('plat')) nopol = val;
-                    // Merek
                     else if (keyClean.includes('merek') || keyClean.includes('merk')) merk = val;
-                    // Type / Tipe / Jenis
                     else if (keyClean.includes('type') || keyClean.includes('tipe') || keyClean.includes('jenis') || keyClean.includes('model')) tipe = val;
-                    // Tahun
                     else if (keyClean.includes('tahun') || keyClean.includes('thn')) tahun = val;
-                    // Warna
                     else if (keyClean.includes('warna')) warna = val;
-                    // Cylinder / CC / Silinder
                     else if (keyClean.includes('cylinder') || keyClean.includes('cc') || keyClean.includes('silinder')) cylinder = val;
-                    // BBM / Bahan Bakar
                     else if (keyClean.includes('bbm') || keyClean.includes('bahan')) bbm = val;
-                    // Noka / Rangka / VIN
                     else if (keyClean.includes('noka') || keyClean.includes('rangka') || keyClean === 'vin') noka = val;
-                    // Nosin / Mesin / Engine
                     else if (keyClean.includes('nosin') || keyClean.includes('mesin') || keyClean === 'engine') nosin = val;
-                    // BPKB
                     else if (keyClean.includes('bpkb')) bpkb = val;
-                    // STNK
                     else if (keyClean.includes('stnk')) stnk = val;
-                    // Nama
                     else if (keyClean.includes('nama') || keyClean.includes('pemilik')) nama = val;
-                    // NIK / KTP / Identitas
                     else if (keyClean.includes('nik') || keyClean.includes('ktp') || keyClean.includes('identitas')) nik = val;
-                    // MSSDN / HP / Telepon
                     else if (keyClean.includes('mssdn') || keyClean.includes('hp') || keyClean.includes('telepon') || keyClean.includes('wa')) mssdn = val;
-                    // Pekerjaan / Job
                     else if (keyClean.includes('pekerjaan') || keyClean.includes('job')) pekerjaan = val;
-                    // Alamat
-                    else if (keyClean.includes('alamat')) alamat = val;
                 }
 
                 if (!nopol && noka) nopol = noka;
                 if (!nopol) nopol = `KENDARAAN_${idx + 1}`;
 
-                // Cleaned Search Keys
                 const qNopol = makeQueryClean(nopol);
                 const qNoka = makeQueryClean(noka);
                 const qNosin = makeQueryClean(nosin);
 
-                // COMPLETE PAYLOAD CONTAINING ALL 15 FIELDS AND ALL ALIASES MATCHING SCREENSHOTS EXACTLY
+                // COMPLETE 15-FIELD PAYLOAD + AUDIT TRACKING METADATA
                 const firestoreDocData = {
-                    // 1. NO.PLAT / Nopol
-                    "NO.PLAT": nopol, "NO PLAT": nopol, "nopol": nopol, "Nopol": nopol, "no_polisi": nopol, "NopolServer": nopol, "NO_POLISI": nopol, "plat": nopol, "plat_nomor": nopol,
-                    
-                    // 2. MEREK
+                    // 15 Field Vehicle Detail
+                    "NO.PLAT": nopol, "NO PLAT": nopol, "nopol": nopol, "Nopol": nopol, "no_polisi": nopol, "NopolServer": nopol, "NO_POLISI": nopol,
                     "MEREK": merk, "merek": merk, "merk": merk, "Merk": merk,
-
-                    // 3. TYPE
-                    "TYPE": tipe, "type": tipe, "Type": tipe, "tipe": tipe, "Tipe": tipe, "TIPE": tipe, "jenis": tipe, "Jenis": tipe,
-
-                    // 4. TAHUN
-                    "TAHUN": tahun, "tahun": tahun, "Tahun": tahun, "thn": tahun, "tahun_buat": tahun,
-
-                    // 5. WARNA
+                    "TYPE": tipe, "type": tipe, "Type": tipe, "tipe": tipe, "Tipe": tipe, "TIPE": tipe, "jenis": tipe,
+                    "TAHUN": tahun, "tahun": tahun, "Tahun": tahun, "thn": tahun,
                     "WARNA": warna, "warna": warna, "Warna": warna,
+                    "CYLINDER": cylinder, "cylinder": cylinder, "Cylinder": cylinder, "cc": cylinder, "CC": cylinder,
+                    "NAMA BBM": bbm, "nama_bbm": bbm, "bbm": bbm, "BBM": bbm, "bahan_bakar": bbm,
+                    "NOKA": noka, "noka": noka, "nomorRangka": noka, "no_rangka": noka, "NoRangka": noka, "vin": noka,
+                    "NOSIN": nosin, "nosin": nosin, "nomorMesin": nosin, "no_mesin": nosin, "NoMesin": nosin,
+                    "NO. BPKB": bpkb, "NO_BPKB": bpkb, "bpkb": bpkb, "BPKB": bpkb,
+                    "NO. STNK": stnk, "NO_STNK": stnk, "stnk": stnk, "STNK": stnk,
+                    "NAMA": nama, "nama": nama, "namaPemilik": nama, "NamaPemilik": nama,
+                    "NIK": nik, "nik": nik, "ktp": nik, "NoKTP": nik,
+                    "MSSDN": mssdn, "mssdn": mssdn, "no_hp": mssdn, "NoHP": mssdn,
+                    "PEKERJAAN": pekerjaan, "pekerjaan": pekerjaan,
 
-                    // 6. CYLINDER
-                    "CYLINDER": cylinder, "cylinder": cylinder, "Cylinder": cylinder, "cc": cylinder, "CC": cylinder, "silinder": cylinder,
+                    // AUDIT TRACKING METADATA
+                    "diupload_oleh": namaPetugasActive,
+                    "waktu_unggah": waktuUploadLocale,
+                    "waktu_unggah_iso": waktuUploadISO,
+                    "nama_file": primaryFileName,
 
-                    // 7. NAMA BBM
-                    "NAMA BBM": bbm, "nama_bbm": bbm, "bbm": bbm, "BBM": bbm, "bahan_bakar": bbm, "BahanBakar": bbm,
-
-                    // 8. NOKA
-                    "NOKA": noka, "noka": noka, "nomorRangka": noka, "no_rangka": noka, "NoRangka": noka, "vin": noka, "no_frame": noka, "NO_RANGKA": noka,
-
-                    // 9. NOSIN
-                    "NOSIN": nosin, "nosin": nosin, "nomorMesin": nosin, "no_mesin": nosin, "NoMesin": nosin, "no_engine": nosin, "NO_MESIN": nosin,
-
-                    // 10. NO. BPKB
-                    "NO. BPKB": bpkb, "NO_BPKB": bpkb, "NO BPKB": bpkb, "no_bpkb": bpkb, "bpkb": bpkb, "BPKB": bpkb, "NoBPKB": bpkb,
-
-                    // 11. NO. STNK
-                    "NO. STNK": stnk, "NO_STNK": stnk, "NO STNK": stnk, "no_stnk": stnk, "stnk": stnk, "STNK": stnk, "NoSTNK": stnk,
-
-                    // 12. NAMA
-                    "NAMA": nama, "nama": nama, "namaPemilik": nama, "NamaPemilik": nama, "nama_pemilik": nama, "Nama": nama,
-
-                    // 13. NIK
-                    "NIK": nik, "nik": nik, "ktp": nik, "NoKTP": nik, "no_ktp": nik, "identitas": nik, "no_identitas": nik,
-
-                    // 14. MSSDN
-                    "MSSDN": mssdn, "mssdn": mssdn, "no_hp": mssdn, "NoHP": mssdn, "nomor_hp": mssdn, "telepon": mssdn, "hp": mssdn,
-
-                    // 15. PEKERJAAN
-                    "PEKERJAAN": pekerjaan, "pekerjaan": pekerjaan, "Pekerjaan": pekerjaan, "job": pekerjaan, "JOB": pekerjaan,
-
-                    // Extra Details
-                    "ALAMAT": alamat, "alamat": alamat, "Alamat": alamat,
-                    qNopol: qNopol, qNoka: qNoka, qNosin: qNosin,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    qNopol: qNopol, qNoka: qNoka, qNosin: qNosin
                 };
 
                 processedVehicles.push({
                     qNopol: qNopol,
                     qNoka: qNoka,
                     qNosin: qNosin,
-                    docData: firestoreDocData,
-                    raw: row
+                    docData: firestoreDocData
                 });
             });
 
             globalProcessedData = processedVehicles;
+            
+            // Generate Analytics Dashboard Charts
+            generateAnalyticsDashboard(processedVehicles);
+            
+            // Render Table Preview
             tampilkanTablePreview(processedVehicles);
 
-            // 1. SAVE TO CLOUD FIRESTORE (`db.collection('pencarian')`)
+            // SAVE TO FIRESTORE collection('pencarian')
             let totalFirestoreDocsWritten = 0;
             let firestoreErrorMsg = '';
 
             if (dbFirestore && processedVehicles.length > 0) {
-                updateProgressUI(true, `Mengunggah data ke Firestore collection('pencarian')...`, 65);
+                updateProgressUI(true, `Mengunggah data ke Cloud Firestore collection('pencarian')...`, 65);
                 logDiag(`🔥 Memulai Firestore Batch Write ke collection('pencarian')...`, 'info');
 
                 try {
-                    // Create document mapping for Nopol, Noka, & Nosin
                     const firestoreDocMap = new Map();
-
                     processedVehicles.forEach(item => {
                         if (item.qNopol) firestoreDocMap.set(item.qNopol, item.docData);
                         if (item.qNoka) firestoreDocMap.set(item.qNoka, item.docData);
@@ -711,9 +1004,6 @@
                     const docEntries = Array.from(firestoreDocMap.entries());
                     totalFirestoreDocsWritten = docEntries.length;
 
-                    logDiag(`Total Dokumen Firestore yang akan dibuat/diperbarui: ${totalFirestoreDocsWritten} dokumen`, 'info');
-
-                    // Firestore Batch Write (Max 400 items per batch)
                     const batchSize = 400;
                     const totalBatches = Math.ceil(docEntries.length / batchSize);
 
@@ -734,14 +1024,30 @@
                         await delayAsync();
                     }
 
+                    // SAVE ENTRY TO collection('history_uploads')
+                    if (files && files.length > 0) {
+                        for (const f of files) {
+                            const fKey = makeFileHashKey(f.name, f.size);
+                            await dbFirestore.collection('history_uploads').doc(fKey).set({
+                                nama_file: f.name,
+                                ukuran_file: f.size,
+                                diupload_oleh: namaPetugasActive,
+                                waktu_unggah: waktuUploadLocale,
+                                waktu_unggah_iso: waktuUploadISO,
+                                jumlah_baris: processedVehicles.length
+                            }, { merge: true });
+                        }
+                        logDiag(`📝 Riwayat file tersimpan di collection('history_uploads')`, 'success');
+                    }
+
                 } catch (fErr) {
                     firestoreErrorMsg = fErr.message || String(fErr);
                     logDiag(`❌ Firestore Upload Error: ${firestoreErrorMsg}`, 'err');
                 }
             }
 
-            // 2. SAVE TO REALTIME DATABASE (`data_kendaraan`) IF CHECKED
-            if (dbRealtime && document.getElementById('chkSyncRealtime').checked && processedVehicles.length > 0) {
+            // SYNC TO REALTIME DATABASE
+            if (dbRealtime && processedVehicles.length > 0) {
                 updateProgressUI(true, `Menyinkronkan ke Realtime Database 'data_kendaraan'...`, 92);
                 try {
                     const rtdbBatch = {};
@@ -758,16 +1064,16 @@
             const totalTimeSec = ((performance.now() - startTime) / 1000).toFixed(2);
 
             if (totalFirestoreDocsWritten > 0 && !firestoreErrorMsg) {
-                setMsgStatus(`✅ <strong>SUKSES BESAR!</strong> ${totalFirestoreDocsWritten} Dokumen berhasil dibuat di Cloud Firestore <code class="bg-[#0d1117] px-1 py-0.5 rounded text-amber-300">collection('pencarian')</code> (${totalTimeSec}s).<br>🎉 <strong>GARANSI:</strong> Seluruh 15 Field (NO.PLAT, MEREK, TYPE, TAHUN, WARNA, CYLINDER, NAMA BBM, NOKA, NOSIN, BPKB, STNK, NAMA, NIK, MSSDN, PEKERJAAN) sekarang LENGKAP & TAMPIL di aplikasi lain!`, 'sukses');
+                setMsgStatus(`✅ <strong>SUKSES!</strong> ${totalFirestoreDocsWritten} Dokumen tersimpan di Cloud Firestore <code class="bg-[#121212] px-1 py-0.5 rounded text-amber-300">collection('pencarian')</code> (${totalTimeSec}s).<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
                 showToast("🔥 Sukses Disimpan ke Firestore 'pencarian'!");
             } else if (firestoreErrorMsg) {
-                setMsgStatus(`❌ Gagal menyimpan ke Firestore 'pencarian': ${firestoreErrorMsg}`, 'error');
-            } else {
-                setMsgStatus(`✅ ${processedVehicles.length} Kendaraan diproses (${totalTimeSec}s).`, 'sukses');
+                setMsgStatus(`❌ Gagal menyimpan ke Firestore: ${firestoreErrorMsg}`, 'error');
             }
 
             tampilkanSummaryStats(files ? files.length : 1, processedVehicles.length, totalFirestoreDocsWritten);
             cekTotalDatabaseCloud();
+            updateProgressUI(false);
+            document.getElementById('btnSelectFile').disabled = false;
         }
 
         // Table Render & Search
@@ -796,7 +1102,7 @@
             tbody.innerHTML = pageData.map((d, i) => {
                 const doc = d.docData;
                 return `
-                <tr class="hover:bg-[#1c2128]">
+                <tr class="hover:bg-[#2a2a2a]">
                     <td class="p-2.5 font-mono text-gray-500">${start + i + 1}</td>
                     <td class="p-2.5 font-bold text-red-400 font-mono">${doc["NO.PLAT"] || '-'}</td>
                     <td class="p-2.5 font-semibold text-white">${doc["MEREK"] || '-'}</td>
@@ -813,6 +1119,9 @@
                     <td class="p-2.5 font-mono text-gray-300">${doc["NIK"] || '-'}</td>
                     <td class="p-2.5 font-mono text-gray-400">${doc["MSSDN"] || '-'}</td>
                     <td class="p-2.5 text-gray-300">${doc["PEKERJAAN"] || '-'}</td>
+                    <td class="p-2.5 font-bold text-amber-400 bg-red-950/30">${doc["diupload_oleh"] || '-'}</td>
+                    <td class="p-2.5 text-gray-400 bg-red-950/30 text-[10px]">${doc["waktu_unggah"] || '-'}</td>
+                    <td class="p-2.5 text-gray-400 bg-red-950/30 text-[10px]">${doc["nama_file"] || '-'}</td>
                 </tr>
             `}).join('');
 
@@ -836,7 +1145,7 @@
             renderTableRows();
         }
 
-        // Helper UI Routines
+        // Helper Routines
         function updateProgressUI(active, text = '', progress = 0) {
             const card = document.getElementById('progressCard');
             if (active) card.classList.remove('hidden'); else card.classList.add('hidden');
@@ -875,7 +1184,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonList, null, 2));
             const a = document.createElement('a');
             a.setAttribute("href", dataStr);
-            a.setAttribute("download", `firestore_pencarian_15fields_${Date.now()}.json`);
+            a.setAttribute("download", `firestore_pencarian_audit_${Date.now()}.json`);
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -891,7 +1200,7 @@
             textarea.select();
             try {
                 document.execCommand('copy');
-                showToast("📋 JSON 15 Field disalin ke clipboard!");
+                showToast("📋 JSON disalin ke clipboard!");
             } catch(e){}
             document.body.removeChild(textarea);
         }
