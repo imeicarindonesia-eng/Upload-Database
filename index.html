@@ -539,8 +539,6 @@
             return `file_${cleanName}_${fileSize}`;
         }
 
-        const delayAsync = (ms = 25) => new Promise(res => setTimeout(res, ms));
-
         // 1-Click Demo Test
         async function jalankanDemo1Click() {
             logDiag("🚀 Menjalankan Tes Demo 15 Field + Analytics + Audit...", 'warn');
@@ -893,11 +891,10 @@
             document.getElementById('analyticsSection').classList.remove('hidden');
         }
 
-        // CORE ENGINE: Process Data, Build 15 Fields Payload + Audit Metadata
+        // CORE ENGINE: Process Data, Build 15 Fields Payload + Audit Metadata (Optimized Speed)
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
             updateProgressUI(true, `Menyusun dokumen Firestore Multi-Field 15 Variabel...`, 50);
-            await delayAsync();
 
             const namaPetugasActive = getNamaPetugasActive();
             const waktuUploadISO = new Date().toISOString();
@@ -985,13 +982,13 @@
             // Render Table Preview
             tampilkanTablePreview(processedVehicles);
 
-            // SAVE TO FIRESTORE collection('pencarian')
+            // SAVE TO FIRESTORE collection('pencarian') - OPTIMIZED FOR MAXIMUM SPEED
             let totalFirestoreDocsWritten = 0;
             let firestoreErrorMsg = '';
 
             if (dbFirestore && processedVehicles.length > 0) {
                 updateProgressUI(true, `Mengunggah data ke Cloud Firestore collection('pencarian')...`, 65);
-                logDiag(`🔥 Memulai Firestore Batch Write ke collection('pencarian')...`, 'info');
+                logDiag(`🔥 Memulai Firestore Batch Write Cepat ke collection('pencarian')...`, 'info');
 
                 try {
                     const firestoreDocMap = new Map();
@@ -1004,8 +1001,9 @@
                     const docEntries = Array.from(firestoreDocMap.entries());
                     totalFirestoreDocsWritten = docEntries.length;
 
-                    const batchSize = 400;
+                    const batchSize = 500; // Maksimal kapasitas batch Firestore
                     const totalBatches = Math.ceil(docEntries.length / batchSize);
+                    const batchPromises = [];
 
                     for (let b = 0; b < totalBatches; b++) {
                         const batch = dbFirestore.batch();
@@ -1019,10 +1017,12 @@
                         const pct = 65 + Math.round(((b + 1) / totalBatches) * 25);
                         updateProgressUI(true, `Menyimpan Firestore Batch (${b+1}/${totalBatches})...`, pct);
 
-                        await batch.commit();
-                        logDiag(`✅ Firestore Batch ${b+1}/${totalBatches} Commit Sukses!`, 'success');
-                        await delayAsync();
+                        // Eksekusi batch commit secara paralel tanpa delay
+                        batchPromises.push(batch.commit());
                     }
+
+                    await Promise.all(batchPromises);
+                    logDiag(`✅ Semua Firestore Batch Commit Selesai (Cepat & Lengkap)!`, 'success');
 
                     // SAVE ENTRY TO collection('history_uploads')
                     if (files && files.length > 0) {
