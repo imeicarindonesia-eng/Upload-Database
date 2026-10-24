@@ -368,19 +368,15 @@
                             <th class="p-2.5">#</th>
                             <th class="p-2.5">NO.PLAT</th>
                             <th class="p-2.5">MEREK</th>
-                            <th class="p-2.5">TYPE</th>
+                            <th class="p-2.5">TYPE / MODEL</th>
                             <th class="p-2.5">TAHUN</th>
-                            <th class="p-2.5">WARNA</th>
-                            <th class="p-2.5">CYLINDER</th>
-                            <th class="p-2.5">NAMA BBM</th>
                             <th class="p-2.5">NOKA</th>
                             <th class="p-2.5">NOSIN</th>
-                            <th class="p-2.5">NO. BPKB</th>
-                            <th class="p-2.5">NO. STNK</th>
-                            <th class="p-2.5">NAMA</th>
+                            <th class="p-2.5">NAMA (KONSUMEN/DEBITUR)</th>
                             <th class="p-2.5">NIK</th>
                             <th class="p-2.5">MSSDN</th>
-                            <th class="p-2.5">PEKERJAAN</th>
+                            <th class="p-2.5">LEASING / FINANCE</th>
+                            <th class="p-2.5">OVERDUE (OVD)</th>
                             <th class="p-2.5 bg-red-950/60 text-red-300">DIUPLOAD OLEH</th>
                             <th class="p-2.5 bg-red-950/60 text-red-300">WAKTU UNGGAH</th>
                             <th class="p-2.5 bg-red-950/60 text-red-300">NAMA FILE</th>
@@ -415,51 +411,31 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">NO. PLAT</label>
+                    <label class="block font-bold text-gray-400 mb-1">NO. PLAT / NOPOL</label>
                     <input type="text" id="edit_nopol" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-red-400 font-bold uppercase">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">MEREK</label>
+                    <label class="block font-bold text-gray-400 mb-1">MEREK / MERK</label>
                     <input type="text" id="edit_merek" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white font-bold uppercase">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">TYPE</label>
+                    <label class="block font-bold text-gray-400 mb-1">TYPE / MODEL</label>
                     <input type="text" id="edit_type" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">TAHUN</label>
+                    <label class="block font-bold text-gray-400 mb-1">TAHUN KENDARAAN</label>
                     <input type="text" id="edit_tahun" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">WARNA</label>
-                    <input type="text" id="edit_warna" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-400 mb-1">CYLINDER (CC)</label>
-                    <input type="text" id="edit_cylinder" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-400 mb-1">NAMA BBM</label>
-                    <input type="text" id="edit_bbm" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-400 mb-1">NOKA (RANGKA)</label>
+                    <label class="block font-bold text-gray-400 mb-1">NOKA (NOMOR RANGKA)</label>
                     <input type="text" id="edit_noka" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-amber-300 font-mono uppercase">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">NOSIN (MESIN)</label>
+                    <label class="block font-bold text-gray-400 mb-1">NOSIN (NOMOR MESIN)</label>
                     <input type="text" id="edit_nosin" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-amber-300 font-mono uppercase">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">NO. BPKB</label>
-                    <input type="text" id="edit_bpkb" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-400 mb-1">NO. STNK</label>
-                    <input type="text" id="edit_stnk" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-400 mb-1">NAMA PEMILIK</label>
+                    <label class="block font-bold text-gray-400 mb-1">NAMA / KONSUMEN / DEBITUR</label>
                     <input type="text" id="edit_nama" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-emerald-300 font-bold uppercase">
                 </div>
                 <div>
@@ -467,12 +443,16 @@
                     <input type="text" id="edit_nik" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white font-mono">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">MSSDN (HP/WA)</label>
+                    <label class="block font-bold text-gray-400 mb-1">MSSDN (NO HP/WA)</label>
                     <input type="text" id="edit_mssdn" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white font-mono">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-400 mb-1">PEKERJAAN</label>
-                    <input type="text" id="edit_pekerjaan" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
+                    <label class="block font-bold text-gray-400 mb-1">NAMA FINANCE / LEASING</label>
+                    <input type="text" id="edit_leasing" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-white uppercase">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-400 mb-1">OVERDUE (OVD)</label>
+                    <input type="text" id="edit_overdue" class="w-full bg-[#121212] border border-[#333333] p-2 rounded text-rose-400 font-bold uppercase">
                 </div>
             </div>
 
@@ -995,7 +975,7 @@
 
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
-            updateProgressUI(true, `Menyusun & Mengoptimasi Dokumen Firestore...`, 50);
+            updateProgressUI(true, `Filter & Menyusun Dokumen Firestore...`, 50);
             await delayAsync();
 
             const namaPetugasActive = getNamaPetugasActive();
@@ -1006,30 +986,62 @@
             const processedVehicles = [];
 
             semuaDataRaw.forEach((row, idx) => {
-                let nopol = "", merk = "", tipe = "", tahun = "", warna = "", cylinder = "", bbm = "";
-                let noka = "", nosin = "", bpkb = "", stnk = "";
-                let nama = "", nik = "", mssdn = "", pekerjaan = "";
+                let nopol = "", merk = "", tipe = "", tahun = "";
+                let noka = "", nosin = "";
+                let nama = "", nik = "", mssdn = "";
+                let leasing = "", overdue = "";
 
+                // STRICT FILTER: Hanya mengekstrak field yang diizinkan saja
                 for (let [k, v] of Object.entries(row)) {
                     if (v === undefined || v === null) continue;
                     const val = String(v).trim().toUpperCase();
                     const keyClean = String(k).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-                    if (keyClean.includes('nopol') || keyClean.includes('polisi') || keyClean.includes('plat')) nopol = val;
-                    else if (keyClean.includes('merek') || keyClean.includes('merk')) merk = val;
-                    else if (keyClean.includes('type') || keyClean.includes('tipe') || keyClean.includes('jenis')) tipe = val;
-                    else if (keyClean.includes('tahun') || keyClean.includes('thn')) tahun = val;
-                    else if (keyClean.includes('warna')) warna = val;
-                    else if (keyClean.includes('cylinder') || keyClean.includes('cc')) cylinder = val;
-                    else if (keyClean.includes('bbm') || keyClean.includes('bahan')) bbm = val;
-                    else if (keyClean.includes('noka') || keyClean.includes('rangka') || keyClean === 'vin') noka = val;
-                    else if (keyClean.includes('nosin') || keyClean.includes('mesin') || keyClean === 'engine') nosin = val;
-                    else if (keyClean.includes('bpkb')) bpkb = val;
-                    else if (keyClean.includes('stnk')) stnk = val;
-                    else if (keyClean.includes('nama') || keyClean.includes('pemilik')) nama = val;
-                    else if (keyClean.includes('nik') || keyClean.includes('ktp')) nik = val;
-                    else if (keyClean.includes('mssdn') || keyClean.includes('hp') || keyClean.includes('telepon')) mssdn = val;
-                    else if (keyClean.includes('pekerjaan') || keyClean.includes('job')) pekerjaan = val;
+                    // NOPOL / NO PLAT
+                    if (keyClean.includes('nopol') || keyClean.includes('plat') || keyClean.includes('polisi')) {
+                        nopol = val;
+                    }
+                    // MEREK / MERK
+                    else if (keyClean.includes('merek') || keyClean.includes('merk')) {
+                        merk = val;
+                    }
+                    // TYPE / MODEL
+                    else if (keyClean.includes('type') || keyClean.includes('tipe') || keyClean.includes('model')) {
+                        tipe = val;
+                    }
+                    // TAHUN / TAHUN KENDARAAN
+                    else if (keyClean.includes('tahun') || keyClean.includes('thn')) {
+                        tahun = val;
+                    }
+                    // NOKA / NOMOR RANGKA
+                    else if (keyClean.includes('noka') || keyClean.includes('rangka') || keyClean === 'vin') {
+                        noka = val;
+                    }
+                    // NOSIN / NOMOR MESIN
+                    else if (keyClean.includes('nosin') || keyClean.includes('mesin') || keyClean === 'engine') {
+                        nosin = val;
+                    }
+                    // NAMA / NAMA KONSUMEN / DEBITUR / NAMA PEMILIK
+                    else if (keyClean.includes('nama') || keyClean.includes('konsumen') || keyClean.includes('debitur') || keyClean.includes('pemilik')) {
+                        nama = val;
+                    }
+                    // NIK
+                    else if (keyClean.includes('nik') || keyClean.includes('ktp') || keyClean.includes('identitas')) {
+                        nik = val;
+                    }
+                    // MSSDN
+                    else if (keyClean.includes('mssdn') || keyClean.includes('hp') || keyClean.includes('telepon') || keyClean.includes('wa')) {
+                        mssdn = val;
+                    }
+                    // NAMA FINANCE / LEASING
+                    else if (keyClean.includes('finance') || keyClean.includes('leasing')) {
+                        leasing = val;
+                    }
+                    // OVERDOU / OVD
+                    else if (keyClean.includes('overdou') || keyClean.includes('ovd') || keyClean.includes('overdue') || keyClean.includes('tunggakan')) {
+                        overdue = val;
+                    }
+                    // DILUAR FIELD DI ATAS OTOMATIS DIABAIKAN (TIDAK MASUK PAYLOAD)
                 }
 
                 if (!nopol && noka) nopol = noka;
@@ -1039,15 +1051,26 @@
                 const qNoka = makeQueryClean(noka);
                 const qNosin = makeQueryClean(nosin);
 
+                // STRICT PAYLOAD - HANYA FIELD TERPILIH + METADATA AUDIT
                 const firestoreDocData = {
-                    "NO.PLAT": nopol, "MEREK": merk, "TYPE": tipe, "TAHUN": tahun,
-                    "WARNA": warna, "CYLINDER": cylinder, "NAMA BBM": bbm, "NOKA": noka,
-                    "NOSIN": nosin, "NO. BPKB": bpkb, "NO. STNK": stnk, "NAMA": nama,
-                    "NIK": nik, "MSSDN": mssdn, "PEKERJAAN": pekerjaan,
+                    "NO.PLAT": nopol,
+                    "MEREK": merk,
+                    "TYPE": tipe,
+                    "TAHUN": tahun,
+                    "NOKA": noka,
+                    "NOSIN": nosin,
+                    "NAMA": nama,
+                    "NIK": nik,
+                    "MSSDN": mssdn,
+                    "LEASING": leasing,
+                    "OVERDUE": overdue,
+
+                    // Audit Metadata
                     "diupload_oleh": namaPetugasActive,
                     "waktu_unggah": waktuUploadLocale,
                     "waktu_unggah_iso": waktuUploadISO,
                     "nama_file": primaryFileName,
+
                     qNopol: qNopol, qNoka: qNoka, qNosin: qNosin
                 };
 
@@ -1149,22 +1172,7 @@
             document.getElementById('btnSelectFile').disabled = false;
         }
 
-        // FITUR BARU: INLINE TABLE EDITING & ROW DELETION ENGINE
-        function tampilkanTablePreview(dataArray) {
-            const card = document.getElementById('tablePreviewCard');
-            document.getElementById('txtTableRecordCount').textContent = dataArray.length;
-
-            if (!dataArray || dataArray.length === 0) {
-                card.classList.add('hidden');
-                return;
-            }
-
-            globalFilteredTableData = dataArray;
-            currentTablePage = 1;
-            renderTableRows();
-            card.classList.remove('hidden');
-        }
-
+        // Render Table & Editing
         function renderTableRows() {
             const tbody = document.getElementById('previewTableBody');
             const start = (currentTablePage - 1) * rowsPerPage;
@@ -1193,17 +1201,13 @@
                     <td class="p-2.5 font-semibold text-white">${doc["MEREK"] || '-'}</td>
                     <td class="p-2.5 text-gray-200">${doc["TYPE"] || '-'}</td>
                     <td class="p-2.5 text-gray-300">${doc["TAHUN"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["WARNA"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["CYLINDER"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["NAMA BBM"] || '-'}</td>
                     <td class="p-2.5 font-mono text-gray-300">${doc["NOKA"] || '-'}</td>
                     <td class="p-2.5 font-mono text-gray-300">${doc["NOSIN"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-amber-300">${doc["NO. BPKB"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-amber-300">${doc["NO. STNK"] || '-'}</td>
                     <td class="p-2.5 font-semibold text-emerald-300">${doc["NAMA"] || '-'}</td>
                     <td class="p-2.5 font-mono text-gray-300">${doc["NIK"] || '-'}</td>
                     <td class="p-2.5 font-mono text-gray-400">${doc["MSSDN"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["PEKERJAAN"] || '-'}</td>
+                    <td class="p-2.5 font-semibold text-amber-300">${doc["LEASING"] || '-'}</td>
+                    <td class="p-2.5 font-mono font-bold text-rose-400">${doc["OVERDUE"] || '-'}</td>
                     <td class="p-2.5 font-bold text-amber-400 bg-red-950/30">${doc["diupload_oleh"] || '-'}</td>
                     <td class="p-2.5 text-gray-400 bg-red-950/30 text-[10px]">${doc["waktu_unggah"] || '-'}</td>
                     <td class="p-2.5 text-gray-400 bg-red-950/30 text-[10px]">${doc["nama_file"] || '-'}</td>
@@ -1225,17 +1229,13 @@
             document.getElementById('edit_merek').value = doc["MEREK"] || '';
             document.getElementById('edit_type').value = doc["TYPE"] || '';
             document.getElementById('edit_tahun').value = doc["TAHUN"] || '';
-            document.getElementById('edit_warna').value = doc["WARNA"] || '';
-            document.getElementById('edit_cylinder').value = doc["CYLINDER"] || '';
-            document.getElementById('edit_bbm').value = doc["NAMA BBM"] || '';
             document.getElementById('edit_noka').value = doc["NOKA"] || '';
             document.getElementById('edit_nosin').value = doc["NOSIN"] || '';
-            document.getElementById('edit_bpkb').value = doc["NO. BPKB"] || '';
-            document.getElementById('edit_stnk').value = doc["NO. STNK"] || '';
             document.getElementById('edit_nama').value = doc["NAMA"] || '';
             document.getElementById('edit_nik').value = doc["NIK"] || '';
             document.getElementById('edit_mssdn').value = doc["MSSDN"] || '';
-            document.getElementById('edit_pekerjaan').value = doc["PEKERJAAN"] || '';
+            document.getElementById('edit_leasing').value = doc["LEASING"] || '';
+            document.getElementById('edit_overdue').value = doc["OVERDUE"] || '';
 
             document.getElementById('editModalOverlay').classList.remove('hidden');
         }
@@ -1252,17 +1252,13 @@
             const merk = document.getElementById('edit_merek').value.trim().toUpperCase();
             const tipe = document.getElementById('edit_type').value.trim().toUpperCase();
             const tahun = document.getElementById('edit_tahun').value.trim();
-            const warna = document.getElementById('edit_warna').value.trim().toUpperCase();
-            const cylinder = document.getElementById('edit_cylinder').value.trim().toUpperCase();
-            const bbm = document.getElementById('edit_bbm').value.trim().toUpperCase();
             const noka = document.getElementById('edit_noka').value.trim().toUpperCase();
             const nosin = document.getElementById('edit_nosin').value.trim().toUpperCase();
-            const bpkb = document.getElementById('edit_bpkb').value.trim().toUpperCase();
-            const stnk = document.getElementById('edit_stnk').value.trim().toUpperCase();
             const nama = document.getElementById('edit_nama').value.trim().toUpperCase();
             const nik = document.getElementById('edit_nik').value.trim();
             const mssdn = document.getElementById('edit_mssdn').value.trim();
-            const pekerjaan = document.getElementById('edit_pekerjaan').value.trim().toUpperCase();
+            const leasing = document.getElementById('edit_leasing').value.trim().toUpperCase();
+            const overdue = document.getElementById('edit_overdue').value.trim().toUpperCase();
 
             const qNopol = makeQueryClean(nopol);
             const qNoka = makeQueryClean(noka);
@@ -1271,9 +1267,8 @@
             const updatedDoc = {
                 ...globalProcessedData[editingGlobalIndex].docData,
                 "NO.PLAT": nopol, "MEREK": merk, "TYPE": tipe, "TAHUN": tahun,
-                "WARNA": warna, "CYLINDER": cylinder, "NAMA BBM": bbm, "NOKA": noka,
-                "NOSIN": nosin, "NO. BPKB": bpkb, "NO. STNK": stnk, "NAMA": nama,
-                "NIK": nik, "MSSDN": mssdn, "PEKERJAAN": pekerjaan,
+                "NOKA": noka, "NOSIN": nosin, "NAMA": nama,
+                "NIK": nik, "MSSDN": mssdn, "LEASING": leasing, "OVERDUE": overdue,
                 qNopol: qNopol, qNoka: qNoka, qNosin: qNosin
             };
 
@@ -1462,12 +1457,13 @@
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-1">
                             <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NO. PLAT:</span><strong class="text-red-400 font-mono text-sm">${data["NO.PLAT"] || '-'}</strong></div>
                             <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">MEREK / TYPE:</span><strong class="text-white">${data["MEREK"] || '-'} ${data["TYPE"] || ''}</strong></div>
-                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">TAHUN / WARNA:</span><strong class="text-gray-200">${data["TAHUN"] || '-'} / ${data["WARNA"] || '-'}</strong></div>
-                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NAMA PEMILIK:</span><strong class="text-emerald-300 font-semibold">${data["NAMA"] || '-'}</strong></div>
+                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">TAHUN:</span><strong class="text-gray-200">${data["TAHUN"] || '-'}</strong></div>
+                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NAMA DEBITUR / KONSUMEN:</span><strong class="text-emerald-300 font-semibold">${data["NAMA"] || '-'}</strong></div>
                             <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NOKA (RANGKA):</span><strong class="text-gray-300 font-mono">${data["NOKA"] || '-'}</strong></div>
                             <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NOSIN (MESIN):</span><strong class="text-gray-300 font-mono">${data["NOSIN"] || '-'}</strong></div>
-                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NO. BPKB / STNK:</span><strong class="text-amber-300 font-mono">${data["NO. BPKB"] || '-'} / ${data["NO. STNK"] || '-'}</strong></div>
-                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NIK / HP:</span><strong class="text-gray-300 font-mono">${data["NIK"] || '-'} (${data["MSSDN"] || '-'})</strong></div>
+                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">FINANCE / LEASING:</span><strong class="text-amber-300 font-semibold">${data["LEASING"] || '-'}</strong></div>
+                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">OVERDUE (OVD):</span><strong class="text-rose-400 font-mono font-bold">${data["OVERDUE"] || '-'}</strong></div>
+                            <div class="bg-[#1e1e1e] p-2.5 rounded-lg border border-[#333333]"><span class="text-gray-400 block text-[9px] font-bold uppercase">NIK / MSSDN (HP):</span><strong class="text-gray-300 font-mono">${data["NIK"] || '-'} (${data["MSSDN"] || '-'})</strong></div>
                         </div>
                         <div class="bg-red-950/40 border border-red-500/30 p-2.5 rounded-lg flex flex-wrap justify-between items-center text-[10px] text-gray-300 gap-2">
                             <span>👤 Diupload Oleh: <strong class="text-amber-300">${data["diupload_oleh"] || 'Petugas'}</strong></span>
