@@ -1172,6 +1172,23 @@
             document.getElementById('btnSelectFile').disabled = false;
         }
 
+        // FUNGSI TAMPILKAN PREVIEW TABEL (PERBAIKAN ERROR)
+        function tampilkanTablePreview(dataArray) {
+            const card = document.getElementById('tablePreviewCard');
+            const txtCount = document.getElementById('txtTableRecordCount');
+            if (txtCount) txtCount.textContent = dataArray ? dataArray.length : 0;
+
+            if (!dataArray || dataArray.length === 0) {
+                if (card) card.classList.add('hidden');
+                return;
+            }
+
+            globalFilteredTableData = dataArray;
+            currentTablePage = 1;
+            renderTableRows();
+            if (card) card.classList.remove('hidden');
+        }
+
         // Render Table & Editing
         function renderTableRows() {
             const tbody = document.getElementById('previewTableBody');
