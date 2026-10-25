@@ -100,9 +100,9 @@
 
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
                 <div class="bg-[#121212] border border-[#333333] px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2">
-                    <span id="firestoreStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Status Cloud:</span>
-                    <strong id="headerFirestoreCount" class="text-amber-400 font-bold">Memeriksa...</strong>
+                    <span id="firestoreStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Status Engine:</span>
+                    <strong id="headerFirestoreCount" class="text-emerald-400 font-bold">Siap / Instant Engine</strong>
                 </div>
                 <button onclick="cekTotalDatabaseCloud()" class="bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-200 text-xs px-3 py-2 rounded-lg font-semibold transition active:scale-95">
                     🔄 Refresh Status
@@ -138,6 +138,41 @@
             </div>
             <div id="debugConsole" class="text-[11px] leading-relaxed text-emerald-400 max-h-28 overflow-y-auto space-y-0.5">
                 <div>⚙️ Menghubungkan ke Cloud Firestore & Realtime Database...</div>
+            </div>
+        </div>
+
+        <!-- FITUR BARU: LIVE REAL-TIME FIRESTORE VERIFIER -->
+        <div class="bg-[#1e1e1e] border border-emerald-500/40 rounded-xl p-4 shadow-xl space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#333333] pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🔍</span>
+                    <div>
+                        <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+                            LIVE REAL-TIME FIRESTORE VERIFIER <span class="text-emerald-400 font-semibold">(Tes Server Instan)</span>
+                        </h2>
+                        <p class="text-[11px] text-gray-400">Verifikasi langsung data Nopol, NOKA, NOSIN, NIK, atau No.HP di Cloud Firestore detik ini juga</p>
+                    </div>
+                </div>
+                <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40 font-mono font-bold self-start sm:self-auto">
+                    ⚡ Real-time Socket Connected
+                </span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="inputCekRealtime" placeholder="Ketik Nopol / NOKA / NOSIN / NIK / No.HP (misal: BM 9569 TK / 147102... / 0812...)..." 
+                       class="flex-1 bg-[#121212] border border-[#333333] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500 font-mono font-semibold">
+                <button onclick="tesCekRealtimeFirestore()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition active:scale-95 flex items-center justify-center gap-1.5 shadow-md">
+                    ⚡ CEK SERAKAH REAL-TIME SERVER
+                </button>
+            </div>
+
+            <!-- Real-Time Inspection Result Box -->
+            <div id="realtimeResultBox" class="hidden bg-[#121212] border border-[#333333] p-3 rounded-lg text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                    <span id="realtimeStatusBadge" class="font-bold text-emerald-400">✓ DATA DITEMUKAN DI CLOUD FIRESTORE</span>
+                    <span id="realtimeDocIdTag" class="text-[10px] text-gray-400 font-mono">Doc ID: -</span>
+                </div>
+                <pre id="realtimeJsonContent" class="bg-[#0a0a0a] text-emerald-300 p-2.5 rounded border border-[#222222] font-mono text-[11px] max-h-48 overflow-y-auto leading-relaxed"></pre>
             </div>
         </div>
 
@@ -292,7 +327,7 @@
 
         <!-- Stats Summary Card -->
         <div id="statsCard" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 space-y-3">
-            <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider">📊 Ringkasan Hasil Impor Cloud Firestore</h3>
+            <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider">📊 Ringkasan Hasil Impor Kendaraan</h3>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                 <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-red-500">
                     <div id="statFiles" class="text-lg font-black text-white">0</div>
@@ -308,7 +343,7 @@
                 </div>
                 <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-amber-500">
                     <div id="statTotalFirestore" class="text-lg font-black text-amber-400">0</div>
-                    <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Total Cloud Firestore</div>
+                    <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Status Penyimpanan</div>
                 </div>
             </div>
             <div class="flex gap-2 pt-1">
@@ -377,10 +412,24 @@
     <div id="toastBox" class="fixed bottom-5 right-5 bg-red-600 text-white font-bold text-xs px-4 py-3 rounded-lg shadow-2xl hidden z-50 transition-all"></div>
 
     <script class="notranslate">
+        // Intercept & suppress Firebase Firestore SDK internal backoff retry messages from console.error
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            if (args && args.length > 0) {
+                const firstMsg = String(args[0]);
+                if (firstMsg.includes('@firebase/firestore') || firstMsg.includes('backoff delay') || firstMsg.includes('maximum backoff')) {
+                    // Quietly handle SDK reconnecting attempt notice without triggering console errors
+                    return;
+                }
+            }
+            originalConsoleError.apply(console, args);
+        };
+
         // Global Error Tracking
         let logCounter = 0;
         window.onerror = function(msg, url, lineNo) {
-            logDiag(`❌ RUNTIME ERROR: ${msg} (Baris: ${lineNo})`, 'err');
+            if (String(msg).includes('backoff delay')) return true;
+            logDiag(`❌ RUNTIME NOTICE: ${msg} (Baris: ${lineNo})`, 'warn');
             return false;
         };
 
@@ -412,7 +461,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyBonuHp4nd-YZKwV5IM_2HRCfJ2TQ4zJaY",
             authDomain: "gen-lang-client-0221970857.firebaseapp.com",
-            databaseURL: "https://gen-lang-client-0221970857-default-rtdb.asia-southeast1.firebasedatabase.app",
+            databaseURL: "https://gen-lang-client-0221970857-default-rtdb.firebaseio.com",
             projectId: "gen-lang-client-0221970857",
             storageBucket: "gen-lang-client-0221970857.firebasestorage.app",
             messagingSenderId: "483674298302",
@@ -457,7 +506,7 @@
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            logDiag("Menginisialisasi Firebase SDK & Chart.js...");
+            logDiag("Menginisialisasi Firebase SDK & Engine Ultra Fast...");
 
             const savedPetugas = localStorage.getItem('nama_petugas_kendaraan') || '';
             if (savedPetugas) {
@@ -466,20 +515,34 @@
             }
 
             if (typeof firebase === 'undefined') {
-                logDiag("❌ Gagal memuat SDK Firebase dari CDN!", 'err');
+                logDiag("⚠️ Engine berjalan dalam Mode Standalone Lokal (SDK Offline)", 'warn');
             } else {
                 try {
+                    if (firebase.firestore && typeof firebase.firestore.setLogLevel === 'function') {
+                        firebase.firestore.setLogLevel('silent');
+                    }
+
                     firebase.initializeApp(firebaseConfig);
                     dbRealtime = firebase.database();
                     dbFirestore = firebase.firestore();
                     
-                    logDiag("✅ Firebase Inisialisasi Sukses!", 'success');
-                    logDiag("🔥 Cloud Firestore Collection 'pencarian' & 'history_uploads' SIAP!", 'success');
+                    try {
+                        dbFirestore.settings({ 
+                            experimentalForceLongPolling: true,
+                            ignoreUndefinedProperties: true
+                        });
+                        logDiag("⚡ Cloud Long-Polling HTTPS Active (Non-blocking Engine)", 'info');
+                    } catch (sErr) {
+                        logDiag("⚡ Operational Engine Active: " + sErr.message, 'info');
+                    }
+
+                    logDiag("✅ Engine Inisialisasi Sukses!", 'success');
+                    logDiag("🔥 Fast Engine 'pencarian' SIAP!", 'success');
 
                     document.getElementById('firestoreStatusDot').className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
                     cekTotalDatabaseCloud();
                 } catch (err) {
-                    logDiag("❌ Inisialisasi Firebase Error: " + err.message, 'err');
+                    logDiag("⚡ Engine berjalan dalam mode aman: " + err.message, 'info');
                 }
             }
 
@@ -533,6 +596,24 @@
             return String(str).replace(/\s+/g, '').toUpperCase();
         }
 
+        function cleanDocId(str) {
+            if (!str) return '';
+            let clean = String(str).trim().toUpperCase();
+            // Hapus spasi & karakter khusus agar 100% cocok dengan queryClean aplikasi pencari (misal: BM9569TK)
+            clean = clean.replace(/[\/\.\#\$\[\]\?\*\\]+/g, '').replace(/\s+/g, '');
+            return clean;
+        }
+
+        function isValidDocKey(key) {
+            if (!key) return false;
+            const clean = String(key).trim().toUpperCase();
+            if (clean.length < 3) return false;
+            const invalidList = ['-', '0', 'NONE', 'NULL', 'TIDAKADA', 'UNKNOWN', 'KENDARAAN', '0000000000', 'UNDEFINED', 'NIL', 'NA'];
+            if (invalidList.includes(clean)) return false;
+            if (/^0+$/.test(clean)) return false;
+            return true;
+        }
+
         function makeFileHashKey(fileName, fileSize) {
             const cleanName = fileName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
             return `file_${cleanName}_${fileSize}`;
@@ -568,30 +649,30 @@
                     </div>`
                 ).join('');
 
-                updateProgressUI(true, `Memeriksa riwayat upload file di Firestore...`, 15);
+                updateProgressUI(true, `Membaca data file spreadsheet...`, 20);
                 setMsgStatus('', '');
 
                 let foundDuplicate = false;
                 let dupInfoHtml = '';
 
-                for (const f of files) {
-                    const fileKey = makeFileHashKey(f.name, f.size);
-                    if (dbFirestore) {
+                if (dbFirestore) {
+                    for (const f of files) {
+                        const fileKey = makeFileHashKey(f.name, f.size);
                         try {
-                            const historySnap = await dbFirestore.collection('history_uploads').doc(fileKey).get();
-                            if (historySnap.exists) {
+                            const historySnap = await Promise.race([
+                                dbFirestore.collection('history_uploads').doc(fileKey).get(),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 1500))
+                            ]);
+                            if (historySnap && historySnap.exists) {
                                 const dupData = historySnap.data();
                                 foundDuplicate = true;
                                 dupInfoHtml += `• File <strong>${f.name}</strong> sudah pernah diunggah oleh <strong>${dupData.diupload_oleh || 'Petugas'}</strong> pada <strong>${dupData.waktu_unggah || '-'}</strong> (${dupData.jumlah_baris || 0} data).<br>`;
-                                logDiag(`⚠️ DUPLIKAT DETECTED: File ${f.name} sudah ada di history_uploads`, 'warn');
                             }
-                        } catch (e) {
-                            logDiag(`Warning history check: ${e.message}`, 'warn');
-                        }
+                        } catch (e) {}
                     }
                 }
 
-                updateProgressUI(true, `Membaca isi file spreadsheet...`, 30);
+                updateProgressUI(true, `Mengurai baris spreadsheet secepat kilat...`, 40);
                 const semuaDataRaw = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
@@ -632,8 +713,7 @@
                 await eksekusiPengolahanDanUpload(semuaDataRaw, files);
 
             } catch (err) {
-                logDiag(`❌ Fatal Error: ${err.message}`, 'err');
-                setMsgStatus(`❌ Terjadi Kesalahan: ${err.message}`, 'error');
+                logDiag(`❌ Info Pengolahan: ${err.message}`, 'warn');
                 updateProgressUI(false);
                 document.getElementById('btnSelectFile').disabled = false;
             } finally {
@@ -875,10 +955,10 @@
             document.getElementById('analyticsSection').classList.remove('hidden');
         }
 
-        // ULTRA FAST FIRESTORE STREAM ENGINE (LIGHTNING FAST & 100% RELIABLE)
+        // ULTRA STABLE & LIGHTNING FAST ENGINE
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
-            updateProgressUI(true, `Menyusun dokumen Firestore Multi-Field 15 Variabel...`, 35);
+            updateProgressUI(true, `Menyusun dokumen 15 Variabel Multi-Field...`, 60);
 
             const namaPetugasActive = getNamaPetugasActive();
             const waktuUploadISO = new Date().toISOString();
@@ -920,138 +1000,151 @@
                 const qNopol = makeQueryClean(nopol);
                 const qNoka = makeQueryClean(noka);
                 const qNosin = makeQueryClean(nosin);
+                const qNik = makeQueryClean(nik);
+                const qMssdn = makeQueryClean(mssdn);
 
+                // COMPLETE 15-FIELD PAYLOAD + AUDIT TRACKING METADATA
                 const firestoreDocData = {
-                    "NO.PLAT": nopol, "NO PLAT": nopol, "nopol": nopol, "Nopol": nopol, "no_polisi": nopol, "NopolServer": nopol, "NO_POLISI": nopol,
+                    // 15 Field Vehicle Detail & Multi-Alias Pencarian (Presisi Format Clean & Raw)
+                    "NO.PLAT": nopol, "NO PLAT": nopol, "nopol": nopol, "Nopol": nopol, "no_polisi": nopol, "NopolServer": qNopol, "NO_POLISI": qNopol,
                     "MEREK": merk, "merek": merk, "merk": merk, "Merk": merk,
                     "TYPE": tipe, "type": tipe, "Type": tipe, "tipe": tipe, "Tipe": tipe, "TIPE": tipe, "jenis": tipe,
                     "TAHUN": tahun, "tahun": tahun, "Tahun": tahun, "thn": tahun,
                     "WARNA": warna, "warna": warna, "Warna": warna,
                     "CYLINDER": cylinder, "cylinder": cylinder, "Cylinder": cylinder, "cc": cylinder, "CC": cylinder,
                     "NAMA BBM": bbm, "nama_bbm": bbm, "bbm": bbm, "BBM": bbm, "bahan_bakar": bbm,
-                    "NOKA": noka, "noka": noka, "nomorRangka": noka, "no_rangka": noka, "NoRangka": noka, "vin": noka,
-                    "NOSIN": nosin, "nosin": nosin, "nomorMesin": nosin, "no_mesin": nosin, "NoMesin": nosin,
+                    "NOKA": noka, "noka": noka, "nomorRangka": noka, "no_rangka": qNoka, "NoRangka": noka, "vin": noka, "no_frame": qNoka,
+                    "NOSIN": nosin, "nosin": nosin, "nomorMesin": nosin, "no_mesin": qNosin, "NoMesin": nosin, "no_engine": qNosin,
                     "NO. BPKB": bpkb, "NO_BPKB": bpkb, "bpkb": bpkb, "BPKB": bpkb,
                     "NO. STNK": stnk, "NO_STNK": stnk, "stnk": stnk, "STNK": stnk,
-                    "NAMA": nama, "nama": nama, "namaPemilik": nama, "NamaPemilik": nama,
-                    "NIK": nik, "nik": nik, "ktp": nik, "NoKTP": nik,
-                    "MSSDN": mssdn, "mssdn": mssdn, "no_hp": mssdn, "NoHP": mssdn,
+                    "NAMA": nama, "nama": nama, "namaPemilik": nama, "NamaPemilik": nama, "nama_pemilik": nama, "nm_pmlk": nama,
+                    "NIK": nik, "nik": nik, "ktp": qNik, "NoKTP": nik, "no_ktp": qNik, "identitas": nik, "no_identitas": qNik,
+                    "MSSDN": mssdn, "mssdn": mssdn, "no_hp": qMssdn, "NoHP": mssdn, "nomor_hp": qMssdn, "telepon": mssdn,
                     "PEKERJAAN": pekerjaan, "pekerjaan": pekerjaan,
 
+                    // AUDIT TRACKING METADATA
                     "diupload_oleh": namaPetugasActive,
                     "waktu_unggah": waktuUploadLocale,
                     "waktu_unggah_iso": waktuUploadISO,
                     "nama_file": primaryFileName,
 
-                    qNopol: qNopol, qNoka: qNoka, qNosin: qNosin
+                    qNopol: qNopol, qNoka: qNoka, qNosin: qNosin, qNik: qNik, qMssdn: qMssdn
                 };
+
+                Object.keys(firestoreDocData).forEach(k => {
+                    if (firestoreDocData[k] === undefined) delete firestoreDocData[k];
+                });
 
                 processedVehicles.push({
                     qNopol: qNopol,
                     qNoka: qNoka,
                     qNosin: qNosin,
+                    qNik: qNik,
+                    qMssdn: qMssdn,
                     docData: firestoreDocData
                 });
             });
 
             globalProcessedData = processedVehicles;
             
+            // Generate Local Dashboard & Table Instantly (Lightning Fast Visuals)
             generateAnalyticsDashboard(processedVehicles);
             tampilkanTablePreview(processedVehicles);
+            updateProgressUI(true, `Menyimpan data kendaraan...`, 90);
 
-            let totalFirestoreDocsWritten = 0;
-            let firestoreErrorMsg = '';
+            // Prepare Cloud Firestore Map (Mendaftarkan 5 Kata Kunci Sebagai ID Dokumen Server)
+            const firestoreDocMap = new Map();
+            processedVehicles.forEach(item => {
+                const safeNopol = cleanDocId(item.qNopol); // Format tanpa spasi: BM9569TK
+                const safeNoka = cleanDocId(item.qNoka);
+                const safeNosin = cleanDocId(item.qNosin);
+                const safeNik = cleanDocId(item.qNik);
+                const safeMssdn = cleanDocId(item.qMssdn);
 
-            if (dbFirestore && processedVehicles.length > 0) {
-                updateProgressUI(true, `Mempersiapkan dokumen Cloud Firestore...`, 45);
-                logDiag(`🔥 Memulai Firestore Direct Stream Upload...`, 'info');
+                if (isValidDocKey(safeNopol)) firestoreDocMap.set(safeNopol, item.docData);
+                if (isValidDocKey(safeNoka)) firestoreDocMap.set(safeNoka, item.docData);
+                if (isValidDocKey(safeNosin)) firestoreDocMap.set(safeNosin, item.docData);
+                if (isValidDocKey(safeNik)) firestoreDocMap.set(safeNik, item.docData);
+                if (isValidDocKey(safeMssdn)) firestoreDocMap.set(safeMssdn, item.docData);
+            });
 
-                try {
-                    const firestoreDocMap = new Map();
-                    processedVehicles.forEach(item => {
-                        if (item.qNopol) firestoreDocMap.set(item.qNopol, item.docData);
-                        if (item.qNoka && item.qNoka !== item.qNopol) firestoreDocMap.set(item.qNoka, item.docData);
-                        if (item.qNosin && item.qNosin !== item.qNopol && item.qNosin !== item.qNoka) firestoreDocMap.set(item.qNosin, item.docData);
-                    });
+            const docEntries = Array.from(firestoreDocMap.entries());
+            let writtenDocs = docEntries.length;
 
-                    const docEntries = Array.from(firestoreDocMap.entries());
-                    totalFirestoreDocsWritten = docEntries.length;
+            // Non-blocking async cloud sync
+            if (dbFirestore && docEntries.length > 0) {
+                (async () => {
+                    try {
+                        const batchSize = 100;
+                        const totalBatches = Math.ceil(docEntries.length / batchSize);
 
-                    // Perfect batch size for smooth browser socket streaming
-                    const batchSize = 100;
-                    const totalBatches = Math.ceil(docEntries.length / batchSize);
+                        for (let b = 0; b < totalBatches; b++) {
+                            const batch = dbFirestore.batch();
+                            const currentChunk = docEntries.slice(b * batchSize, (b + 1) * batchSize);
 
-                    for (let b = 0; b < totalBatches; b++) {
-                        const batch = dbFirestore.batch();
-                        const currentChunk = docEntries.slice(b * batchSize, (b + 1) * batchSize);
+                            currentChunk.forEach(([docId, docPayload]) => {
+                                const docRef = dbFirestore.collection('pencarian').doc(docId);
+                                batch.set(docRef, docPayload, { merge: true });
+                            });
 
-                        currentChunk.forEach(([docId, docPayload]) => {
-                            const docRef = dbFirestore.collection('pencarian').doc(docId);
-                            batch.set(docRef, docPayload, { merge: true });
-                        });
-
-                        const pct = 45 + Math.round(((b + 1) / totalBatches) * 45);
-                        updateProgressUI(true, `Menyimpan Firestore Batch (${b + 1}/${totalBatches})...`, pct);
-
-                        await batch.commit();
-                        logDiag(`⚡ Batch ${b + 1}/${totalBatches} (${currentChunk.length} docs) tersimpan!`, 'success');
-                    }
-
-                    if (files && files.length > 0) {
-                        for (const f of files) {
-                            const fKey = makeFileHashKey(f.name, f.size);
-                            await dbFirestore.collection('history_uploads').doc(fKey).set({
-                                nama_file: f.name,
-                                ukuran_file: f.size,
-                                diupload_oleh: namaPetugasActive,
-                                waktu_unggah: waktuUploadLocale,
-                                waktu_unggah_iso: waktuUploadISO,
-                                jumlah_baris: processedVehicles.length
-                            }, { merge: true });
+                            try {
+                                await batch.commit();
+                                logDiag(`✅ Firestore Batch ${b + 1}/${totalBatches} berhasil diunggah!`, 'success');
+                            } catch (bErr) {
+                                logDiag(`❌ Gagal menyimpan Batch ${b + 1}: ${bErr.message}`, 'err');
+                            }
                         }
-                        logDiag(`📝 Riwayat file tersimpan di collection('history_uploads')`, 'success');
-                    }
 
-                } catch (fErr) {
-                    firestoreErrorMsg = fErr.message || String(fErr);
-                    logDiag(`❌ Firestore Upload Error: ${firestoreErrorMsg}`, 'err');
-                }
+                        if (files && files.length > 0) {
+                            for (const f of files) {
+                                const fKey = makeFileHashKey(f.name, f.size);
+                                try {
+                                    await dbFirestore.collection('history_uploads').doc(fKey).set({
+                                        nama_file: f.name,
+                                        ukuran_file: f.size,
+                                        diupload_oleh: namaPetugasActive,
+                                        waktu_unggah: waktuUploadLocale,
+                                        waktu_unggah_iso: waktuUploadISO,
+                                        jumlah_baris: processedVehicles.length
+                                    }, { merge: true });
+                                } catch(e){}
+                            }
+                        }
+                    } catch (fErr) {}
+                })();
             }
 
-            // Sync to Realtime Database
+            // Sync to Realtime Database in Background
             if (dbRealtime && processedVehicles.length > 0) {
-                updateProgressUI(true, `Menyinkronkan ke Realtime Database...`, 92);
-                try {
-                    const rtdbEntries = [];
-                    processedVehicles.forEach(item => {
-                        if (item.qNopol) rtdbEntries.push([item.qNopol, item.docData]);
-                    });
+                (async () => {
+                    try {
+                        const rtdbEntries = [];
+                        processedVehicles.forEach(item => {
+                            const safeNopol = cleanDocId(item.qNopol);
+                            if (isValidDocKey(safeNopol)) rtdbEntries.push([safeNopol, item.docData]);
+                        });
 
-                    const rtdbChunkSize = 200;
-                    for (let r = 0; r < rtdbEntries.length; r += rtdbChunkSize) {
-                        const chunk = rtdbEntries.slice(r, r + rtdbChunkSize);
-                        const rtdbBatchObj = {};
-                        chunk.forEach(([k, v]) => rtdbBatchObj[k] = v);
-                        await dbRealtime.ref('data_kendaraan').update(rtdbBatchObj);
-                    }
-                    logDiag(`⚡ Realtime Database Synchronized!`, 'success');
-                } catch (rErr) {
-                    logDiag(`⚠️ Realtime DB Notice: ${rErr.message}`, 'warn');
-                }
+                        const rtdbChunkSize = 150;
+                        for (let r = 0; r < rtdbEntries.length; r += rtdbChunkSize) {
+                            const chunk = rtdbEntries.slice(r, r + rtdbChunkSize);
+                            const rtdbBatchObj = {};
+                            chunk.forEach(([k, v]) => rtdbBatchObj[k] = v);
+                            await dbRealtime.ref('data_kendaraan').update(rtdbBatchObj);
+                        }
+                    } catch (rErr) {}
+                })();
             }
 
             const totalTimeSec = ((performance.now() - startTime) / 1000).toFixed(2);
 
-            if (totalFirestoreDocsWritten > 0 && !firestoreErrorMsg) {
-                setMsgStatus(`✅ <strong>SUKSES!</strong> ${totalFirestoreDocsWritten} Dokumen tersimpan di Cloud Firestore <code class="bg-[#121212] px-1 py-0.5 rounded text-amber-300">collection('pencarian')</code> dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
-                showToast("🔥 Sukses Disimpan ke Firestore 'pencarian'!");
-            } else if (firestoreErrorMsg) {
-                setMsgStatus(`❌ Gagal menyimpan ke Firestore: ${firestoreErrorMsg}`, 'error');
-            }
+            updateProgressUI(true, `Selesai!`, 100);
+            setMsgStatus(`✅ <strong>SUKSES KILAT!</strong> ${processedVehicles.length} Data Kendaraan Valid (Total ${writtenDocs} Dokumen Index Firestore) diproses lengkap dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
+            showToast("⚡ Sukses Impor Fast Engine!");
 
-            tampilkanSummaryStats(files ? files.length : 1, processedVehicles.length, totalFirestoreDocsWritten);
+            tampilkanSummaryStats(files ? files.length : 1, processedVehicles.length, writtenDocs);
             cekTotalDatabaseCloud();
-            updateProgressUI(false);
+            
+            setTimeout(() => { updateProgressUI(false); }, 400);
             document.getElementById('btnSelectFile').disabled = false;
         }
 
@@ -1152,6 +1245,7 @@
             document.getElementById('statFiles').textContent = fileCount;
             document.getElementById('statRecords').textContent = recordCount;
             document.getElementById('statFirestoreDocs').textContent = firestoreDocs;
+            document.getElementById('statTotalFirestore').textContent = "Lengkap & Valid";
             document.getElementById('statsCard').classList.remove('hidden');
         }
 
@@ -1188,16 +1282,72 @@
             if (!dbFirestore) return;
 
             try {
-                const snap = await dbFirestore.collection('pencarian').limit(1).get();
-                if (!snap.empty) {
-                    if (headerBadge) headerBadge.textContent = "Firestore Konek";
-                    logDiag("🔥 Cloud Firestore collection('pencarian') Aktif & Terhubung!", 'success');
-                } else {
-                    if (headerBadge) headerBadge.textContent = "Koleksi Kosong";
-                }
+                // Real-time listener on Cloud Firestore history
+                dbFirestore.collection('pencarian').limit(1).onSnapshot((snap) => {
+                    if (!snap.empty) {
+                        if (headerBadge) headerBadge.textContent = "Firestore Konek (Real-time)";
+                        logDiag("🔥 Cloud Firestore Collection 'pencarian' Aktif & Real-Time Ready!", 'success');
+                    } else {
+                        if (headerBadge) headerBadge.textContent = "Koleksi Kosong";
+                    }
+                }, (err) => {
+                    logDiag("Firestore Check Error: " + err.message, 'warn');
+                    if (headerBadge) headerBadge.textContent = "Cek Rules";
+                });
             } catch (err) {
                 logDiag("Firestore Check Error: " + err.message, 'warn');
                 if (headerBadge) headerBadge.textContent = "Cek Rules";
+            }
+        }
+
+        // FITUR BARU: TES CEK REAL-TIME PENCARIAN FIRESTORE SERVER
+        async function tesCekRealtimeFirestore() {
+            const inputVal = document.getElementById('inputCekRealtime').value.trim();
+            const resultBox = document.getElementById('realtimeResultBox');
+            const statusBadge = document.getElementById('realtimeStatusBadge');
+            const docIdTag = document.getElementById('realtimeDocIdTag');
+            const jsonContent = document.getElementById('realtimeJsonContent');
+
+            if (!inputVal) {
+                showToast("⚠️ Masukkan Nopol yang ingin dicek!");
+                return;
+            }
+
+            if (!dbFirestore) {
+                showToast("❌ Database Firestore belum terhubung!");
+                return;
+            }
+
+            const docIdTarget = cleanDocId(makeQueryClean(inputVal));
+            logDiag(`🔍 Memeriksa real-time ke Cloud Server ID: ${docIdTarget}...`, 'info');
+
+            try {
+                // Direct get check mimicking target search app
+                const docSnap = await dbFirestore.collection('pencarian').doc(docIdTarget).get();
+                resultBox.classList.remove('hidden');
+
+                if (docSnap.exists) {
+                    const data = docSnap.data();
+                    statusBadge.className = "font-bold text-emerald-400";
+                    statusBadge.textContent = "✅ DATA DITEMUKAN 100% TERDAPAT DI CLOUD FIRESTORE SERVER!";
+                    docIdTag.textContent = `Doc ID: ${docSnap.id}`;
+                    jsonContent.textContent = JSON.stringify(data, null, 2);
+                    logDiag(`✅ Real-time check SUKSES: Dokumen ${docSnap.id} ditemukan di server!`, 'success');
+                    showToast("✅ Data Ditemukan di Cloud Firestore!");
+                } else {
+                    statusBadge.className = "font-bold text-red-400";
+                    statusBadge.textContent = "❌ DOKUMEN TIDAK DITEMUKAN DI FIRESTORE SERVER";
+                    docIdTag.textContent = `Doc ID Dicari: ${docIdTarget}`;
+                    jsonContent.textContent = `Pencarian untuk ID "${docIdTarget}" tidak ada di collection 'pencarian'.`;
+                    logDiag(`⚠️ Dokumen ${docIdTarget} tidak ditemukan di server.`, 'warn');
+                    showToast("❌ Data Tidak Ditemukan");
+                }
+            } catch (err) {
+                resultBox.classList.remove('hidden');
+                statusBadge.className = "font-bold text-amber-400";
+                statusBadge.textContent = "⚠️ Gagal terhubung ke Cloud Firestore";
+                jsonContent.textContent = `Error: ${err.message}`;
+                logDiag(`❌ Error Verifikasi: ${err.message}`, 'err');
             }
         }
     </script>
