@@ -92,7 +92,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-                        Fast Import Studio Pro <span class="text-red-500 text-sm block sm:inline font-semibold">(Analytics Dashboard & 15 Fields)</span>
+                        Fast Import Studio Pro <span class="text-red-500 text-sm block sm:inline font-semibold">(Ultra Fast Engine & 15 Fields)</span>
                     </h1>
                     <p class="text-xs text-gray-400 mt-0.5">Cloud Firestore 'pencarian' + Analisis Distribusi Kendaraan R2/R4 + Audit Uploader</p>
                 </div>
@@ -459,7 +459,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             logDiag("Menginisialisasi Firebase SDK & Chart.js...");
 
-            // Restore uploader name from localStorage
             const savedPetugas = localStorage.getItem('nama_petugas_kendaraan') || '';
             if (savedPetugas) {
                 document.getElementById('inputNamaPetugas').value = savedPetugas;
@@ -539,6 +538,16 @@
             return `file_${cleanName}_${fileSize}`;
         }
 
+        // Helper Promise with Timeout to prevent hanging socket commits
+        function commitBatchWithTimeout(batch, timeoutMs = 12000) {
+            return Promise.race([
+                batch.commit(),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Network Commit Timeout (12s)")), timeoutMs)
+                )
+            ]);
+        }
+
         // 1-Click Demo Test
         async function jalankanDemo1Click() {
             logDiag("🚀 Menjalankan Tes Demo 15 Field + Analytics + Audit...", 'warn');
@@ -553,7 +562,6 @@
             await eksekusiPengolahanDanUpload(demoData, [{ name: "Demo_Mixed_R2_R4_Dataset.xlsx", size: 8500 }]);
         }
 
-        // Main File Import Processing & Check History Uploads
         async function prosesImportFile(files) {
             if (!files || files.length === 0) return;
             document.getElementById('btnSelectFile').disabled = true;
@@ -570,10 +578,9 @@
                     </div>`
                 ).join('');
 
-                updateProgressUI(true, `Memeriksa riwayat upload file di Firestore...`, 10);
+                updateProgressUI(true, `Memeriksa riwayat upload file di Firestore...`, 15);
                 setMsgStatus('', '');
 
-                // ANTI-DUPLICATE CHECK VIA FIRESTORE collection('history_uploads')
                 let foundDuplicate = false;
                 let dupInfoHtml = '';
 
@@ -594,8 +601,7 @@
                     }
                 }
 
-                // Parse Excel/CSV content
-                updateProgressUI(true, `Membaca isi file spreadsheet...`, 25);
+                updateProgressUI(true, `Membaca isi file spreadsheet...`, 30);
                 const semuaDataRaw = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
@@ -629,7 +635,6 @@
                     document.getElementById('duplicateFileInfoText').innerHTML = dupInfoHtml;
                     document.getElementById('duplicateFileWarningBox').classList.remove('hidden');
                     
-                    // Save payload pending user decision
                     pendingDuplicateUploadPayload = { dataRaw: semuaDataRaw, files: files };
                     return;
                 }
@@ -709,7 +714,6 @@
             });
         }
 
-        // CORE CLASSIFICATION LOGIC FOR RODA 2 VS RODA 4
         function klasifikasiR2atauR4(merek, tipe, cylinder) {
             const combined = `${merek} ${tipe}`.toUpperCase();
             
@@ -723,7 +727,6 @@
                 if (combined.includes(kw)) return 'R4';
             }
 
-            // Check Cylinder / CC
             let ccVal = parseInt(String(cylinder).replace(/[^0-9]/g, ''));
             if (!isNaN(ccVal) && ccVal > 0) {
                 if (ccVal <= 250 && (merek.includes('HONDA') || merek.includes('YAMAHA') || merek.includes('SUZUKI') || merek.includes('KAWASAKI'))) {
@@ -734,7 +737,7 @@
             if (merek.includes('YAMAHA') || merek.includes('KAWASAKI')) return 'R2';
             if (merek.includes('TOYOTA') || merek.includes('MITSUBISHI') || merek.includes('DAIHATSU') || merek.includes('ISUZU') || merek.includes('NISSAN') || merek.includes('HYUNDAI')) return 'R4';
 
-            return 'R4'; // fallback
+            return 'R4';
         }
 
         function ekstrakKodePlat(nopol) {
@@ -747,7 +750,6 @@
             return 'LAIN';
         }
 
-        // FITUR BARU: GENERATE ANALYTICS DASHBOARD CHARTS
         function generateAnalyticsDashboard(processedVehicles) {
             const total = processedVehicles.length;
             if (total === 0) {
@@ -767,20 +769,16 @@
                 const c = doc["CYLINDER"] || "";
                 const p = doc["NO.PLAT"] || "";
 
-                // 1. Classification R2 vs R4
                 const jenis = klasifikasiR2atauR4(m, t, c);
                 if (jenis === 'R2') countR2++; else countR4++;
 
-                // 2. Brand Aggregation
                 const brandClean = m.trim().toUpperCase() || "LAINNYA";
                 brandMap[brandClean] = (brandMap[brandClean] || 0) + 1;
 
-                // 3. Region Plate Aggregation
                 const prefix = ekstrakKodePlat(p);
                 regionMap[prefix] = (regionMap[prefix] || 0) + 1;
             });
 
-            // Update Top Metric Cards
             document.getElementById('metricTotal').textContent = total.toLocaleString('id-ID');
             document.getElementById('metricR2').textContent = countR2.toLocaleString('id-ID');
             document.getElementById('metricR4').textContent = countR4.toLocaleString('id-ID');
@@ -790,7 +788,6 @@
             document.getElementById('metricR2Pct').textContent = `${r2Pct}% dari total`;
             document.getElementById('metricR4Pct').textContent = `${r4Pct}% dari total`;
 
-            // Find Top Region
             let topRegionCode = "-";
             let topRegionCount = 0;
             for (let [code, count] of Object.entries(regionMap)) {
@@ -803,7 +800,6 @@
             document.getElementById('metricTopRegion').textContent = `${topRegionCode} (${topRegionCount})`;
             document.getElementById('metricTopRegionSub').textContent = topRegionDesc;
 
-            // Render Chart 1: Donut R2 vs R4
             const ctxR2R4 = document.getElementById('chartTypeR2R4').getContext('2d');
             if (chartR2R4Instance) chartR2R4Instance.destroy();
             chartR2R4Instance = new Chart(ctxR2R4, {
@@ -827,7 +823,6 @@
             });
             document.getElementById('lblChartTypeFooter').textContent = `R2: ${countR2} (${r2Pct}%) | R4: ${countR4} (${r4Pct}%)`;
 
-            // Render Chart 2: Top Brands
             const sortedBrands = Object.entries(brandMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
             const brandLabels = sortedBrands.map(b => b[0]);
             const brandCounts = sortedBrands.map(b => b[1]);
@@ -858,7 +853,6 @@
             });
             document.getElementById('lblChartBrandFooter').textContent = `Top Brand: ${brandLabels[0] || '-'} (${brandCounts[0] || 0} unit)`;
 
-            // Render Chart 3: Regions
             const sortedRegions = Object.entries(regionMap).sort((a,b) => b[1] - a[1]).slice(0, 6);
             const regionLabels = sortedRegions.map(r => r[0]);
             const regionCounts = sortedRegions.map(r => r[1]);
@@ -891,10 +885,10 @@
             document.getElementById('analyticsSection').classList.remove('hidden');
         }
 
-        // CORE ENGINE: Process Data, Build 15 Fields Payload + Audit Metadata (Optimized Speed)
+        // ROCK-SOLID ULTRA-FAST FIRESTORE BATCH ENGINE (3-CONCURRENCY CHUNKS WITH TIMEOUT RECOVERY)
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
-            updateProgressUI(true, `Menyusun dokumen Firestore Multi-Field 15 Variabel...`, 50);
+            updateProgressUI(true, `Menyusun dokumen Firestore Multi-Field 15 Variabel...`, 35);
 
             const namaPetugasActive = getNamaPetugasActive();
             const waktuUploadISO = new Date().toISOString();
@@ -908,7 +902,6 @@
                 let noka = "", nosin = "", bpkb = "", stnk = "";
                 let nama = "", nik = "", mssdn = "", pekerjaan = "";
 
-                // Extract values from Excel/CSV headers
                 for (let [k, v] of Object.entries(row)) {
                     if (v === undefined || v === null) continue;
                     const val = String(v).trim().toUpperCase();
@@ -938,9 +931,7 @@
                 const qNoka = makeQueryClean(noka);
                 const qNosin = makeQueryClean(nosin);
 
-                // COMPLETE 15-FIELD PAYLOAD + AUDIT TRACKING METADATA
                 const firestoreDocData = {
-                    // 15 Field Vehicle Detail
                     "NO.PLAT": nopol, "NO PLAT": nopol, "nopol": nopol, "Nopol": nopol, "no_polisi": nopol, "NopolServer": nopol, "NO_POLISI": nopol,
                     "MEREK": merk, "merek": merk, "merk": merk, "Merk": merk,
                     "TYPE": tipe, "type": tipe, "Type": tipe, "tipe": tipe, "Tipe": tipe, "TIPE": tipe, "jenis": tipe,
@@ -957,7 +948,6 @@
                     "MSSDN": mssdn, "mssdn": mssdn, "no_hp": mssdn, "NoHP": mssdn,
                     "PEKERJAAN": pekerjaan, "pekerjaan": pekerjaan,
 
-                    // AUDIT TRACKING METADATA
                     "diupload_oleh": namaPetugasActive,
                     "waktu_unggah": waktuUploadLocale,
                     "waktu_unggah_iso": waktuUploadISO,
@@ -976,55 +966,74 @@
 
             globalProcessedData = processedVehicles;
             
-            // Generate Analytics Dashboard Charts
             generateAnalyticsDashboard(processedVehicles);
-            
-            // Render Table Preview
             tampilkanTablePreview(processedVehicles);
 
-            // SAVE TO FIRESTORE collection('pencarian') - OPTIMIZED FOR MAXIMUM SPEED
             let totalFirestoreDocsWritten = 0;
             let firestoreErrorMsg = '';
 
             if (dbFirestore && processedVehicles.length > 0) {
-                updateProgressUI(true, `Mengunggah data ke Cloud Firestore collection('pencarian')...`, 65);
-                logDiag(`🔥 Memulai Firestore Batch Write Cepat ke collection('pencarian')...`, 'info');
+                updateProgressUI(true, `Mempersiapkan dokumen Cloud Firestore...`, 45);
+                logDiag(`🔥 Memulai Firestore Smart Controlled Batch Upload...`, 'info');
 
                 try {
                     const firestoreDocMap = new Map();
                     processedVehicles.forEach(item => {
                         if (item.qNopol) firestoreDocMap.set(item.qNopol, item.docData);
-                        if (item.qNoka) firestoreDocMap.set(item.qNoka, item.docData);
-                        if (item.qNosin) firestoreDocMap.set(item.qNosin, item.docData);
+                        if (item.qNoka && item.qNoka !== item.qNopol) firestoreDocMap.set(item.qNoka, item.docData);
+                        if (item.qNosin && item.qNosin !== item.qNopol && item.qNosin !== item.qNoka) firestoreDocMap.set(item.qNosin, item.docData);
                     });
 
                     const docEntries = Array.from(firestoreDocMap.entries());
                     totalFirestoreDocsWritten = docEntries.length;
 
-                    const batchSize = 500; // Maksimal kapasitas batch Firestore
+                    // Optimal Batch Size = 250 docs (Ensures lightning-fast socket transmission)
+                    const batchSize = 250;
                     const totalBatches = Math.ceil(docEntries.length / batchSize);
-                    const batchPromises = [];
+                    let completedBatches = 0;
 
-                    for (let b = 0; b < totalBatches; b++) {
-                        const batch = dbFirestore.batch();
-                        const currentChunk = docEntries.slice(b * batchSize, (b + 1) * batchSize);
+                    // Execute 3 Batches in Parallel Concurrency Chunks (Smooth progress, 0 socket hanging)
+                    const concurrency = 3;
+                    for (let i = 0; i < docEntries.length; i += batchSize * concurrency) {
+                        const chunkPromises = [];
+                        
+                        for (let j = 0; j < concurrency; j++) {
+                            const batchStart = i + (j * batchSize);
+                            if (batchStart >= docEntries.length) break;
 
-                        currentChunk.forEach(([docId, docPayload]) => {
-                            const docRef = dbFirestore.collection('pencarian').doc(docId);
-                            batch.set(docRef, docPayload, { merge: true });
-                        });
+                            const batchEnd = Math.min(batchStart + batchSize, docEntries.length);
+                            const currentChunk = docEntries.slice(batchStart, batchEnd);
+                            const batchNum = Math.floor(batchStart / batchSize) + 1;
 
-                        const pct = 65 + Math.round(((b + 1) / totalBatches) * 25);
-                        updateProgressUI(true, `Menyimpan Firestore Batch (${b+1}/${totalBatches})...`, pct);
+                            const batch = dbFirestore.batch();
+                            currentChunk.forEach(([docId, docPayload]) => {
+                                const docRef = dbFirestore.collection('pencarian').doc(docId);
+                                batch.set(docRef, docPayload, { merge: true });
+                            });
 
-                        // Eksekusi batch commit secara paralel tanpa delay
-                        batchPromises.push(batch.commit());
+                            chunkPromises.push((async () => {
+                                try {
+                                    await commitBatchWithTimeout(batch, 12000);
+                                } catch (commitErr) {
+                                    logDiag(`⚠️ Timeout batch ${batchNum}, mencoba ulang commit...`, 'warn');
+                                    const retryBatch = dbFirestore.batch();
+                                    currentChunk.forEach(([docId, docPayload]) => {
+                                        retryBatch.set(dbFirestore.collection('pencarian').doc(docId), docPayload, { merge: true });
+                                    });
+                                    await retryBatch.commit();
+                                }
+
+                                completedBatches++;
+                                const pct = 45 + Math.round((completedBatches / totalBatches) * 45);
+                                updateProgressUI(true, `Menyimpan Firestore Batch (${completedBatches}/${totalBatches})...`, pct);
+                                logDiag(`✅ Firestore Batch ${completedBatches}/${totalBatches} Selesai (${currentChunk.length} dokumen)`, 'success');
+                            })());
+                        }
+
+                        await Promise.all(chunkPromises);
+                        await new Promise(r => setTimeout(r, 10)); // Yield UI main thread
                     }
 
-                    await Promise.all(batchPromises);
-                    logDiag(`✅ Semua Firestore Batch Commit Selesai (Cepat & Lengkap)!`, 'success');
-
-                    // SAVE ENTRY TO collection('history_uploads')
                     if (files && files.length > 0) {
                         for (const f of files) {
                             const fKey = makeFileHashKey(f.name, f.size);
@@ -1046,15 +1055,22 @@
                 }
             }
 
-            // SYNC TO REALTIME DATABASE
+            // Chunked Synchronization to Realtime Database
             if (dbRealtime && processedVehicles.length > 0) {
-                updateProgressUI(true, `Menyinkronkan ke Realtime Database 'data_kendaraan'...`, 92);
+                updateProgressUI(true, `Menyinkronkan ke Realtime Database...`, 92);
                 try {
-                    const rtdbBatch = {};
+                    const rtdbEntries = [];
                     processedVehicles.forEach(item => {
-                        if (item.qNopol) rtdbBatch[item.qNopol] = item.docData;
+                        if (item.qNopol) rtdbEntries.push([item.qNopol, item.docData]);
                     });
-                    await dbRealtime.ref('data_kendaraan').update(rtdbBatch);
+
+                    const rtdbChunkSize = 150;
+                    for (let r = 0; r < rtdbEntries.length; r += rtdbChunkSize) {
+                        const chunk = rtdbEntries.slice(r, r + rtdbChunkSize);
+                        const rtdbBatchObj = {};
+                        chunk.forEach(([k, v]) => rtdbBatchObj[k] = v);
+                        await dbRealtime.ref('data_kendaraan').update(rtdbBatchObj);
+                    }
                     logDiag(`⚡ Realtime Database Synchronized!`, 'success');
                 } catch (rErr) {
                     logDiag(`⚠️ Realtime DB Notice: ${rErr.message}`, 'warn');
@@ -1064,7 +1080,7 @@
             const totalTimeSec = ((performance.now() - startTime) / 1000).toFixed(2);
 
             if (totalFirestoreDocsWritten > 0 && !firestoreErrorMsg) {
-                setMsgStatus(`✅ <strong>SUKSES!</strong> ${totalFirestoreDocsWritten} Dokumen tersimpan di Cloud Firestore <code class="bg-[#121212] px-1 py-0.5 rounded text-amber-300">collection('pencarian')</code> (${totalTimeSec}s).<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
+                setMsgStatus(`✅ <strong>SUKSES!</strong> ${totalFirestoreDocsWritten} Dokumen tersimpan di Cloud Firestore <code class="bg-[#121212] px-1 py-0.5 rounded text-amber-300">collection('pencarian')</code> dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
                 showToast("🔥 Sukses Disimpan ke Firestore 'pencarian'!");
             } else if (firestoreErrorMsg) {
                 setMsgStatus(`❌ Gagal menyimpan ke Firestore: ${firestoreErrorMsg}`, 'error');
@@ -1076,7 +1092,6 @@
             document.getElementById('btnSelectFile').disabled = false;
         }
 
-        // Table Render & Search
         function tampilkanTablePreview(dataArray) {
             const card = document.getElementById('tablePreviewCard');
             document.getElementById('txtTableRecordCount').textContent = dataArray.length;
@@ -1145,7 +1160,6 @@
             renderTableRows();
         }
 
-        // Helper Routines
         function updateProgressUI(active, text = '', progress = 0) {
             const card = document.getElementById('progressCard');
             if (active) card.classList.remove('hidden'); else card.classList.add('hidden');
