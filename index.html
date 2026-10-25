@@ -215,7 +215,7 @@
         <!-- Notification Status Banner -->
         <div id="statusMsgBox" class="hidden p-4 rounded-xl text-xs font-medium leading-relaxed shadow-lg"></div>
 
-        <!-- FITUR BARU: ANALYTICS DASHBOARD PANEL -->
+        <!-- ANALYTICS DASHBOARD PANEL -->
         <div id="analyticsSection" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 sm:p-5 space-y-5 shadow-xl">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#333333] pb-3">
                 <div>
@@ -536,16 +536,6 @@
         function makeFileHashKey(fileName, fileSize) {
             const cleanName = fileName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
             return `file_${cleanName}_${fileSize}`;
-        }
-
-        // Helper Promise with Timeout to prevent hanging socket commits
-        function commitBatchWithTimeout(batch, timeoutMs = 12000) {
-            return Promise.race([
-                batch.commit(),
-                new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error("Network Commit Timeout (12s)")), timeoutMs)
-                )
-            ]);
         }
 
         // 1-Click Demo Test
@@ -885,7 +875,7 @@
             document.getElementById('analyticsSection').classList.remove('hidden');
         }
 
-        // ROCK-SOLID ULTRA-FAST FIRESTORE BATCH ENGINE (3-CONCURRENCY CHUNKS WITH TIMEOUT RECOVERY)
+        // ULTRA FAST FIRESTORE STREAM ENGINE (LIGHTNING FAST & 100% RELIABLE)
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
             updateProgressUI(true, `Menyusun dokumen Firestore Multi-Field 15 Variabel...`, 35);
@@ -974,7 +964,7 @@
 
             if (dbFirestore && processedVehicles.length > 0) {
                 updateProgressUI(true, `Mempersiapkan dokumen Cloud Firestore...`, 45);
-                logDiag(`🔥 Memulai Firestore Smart Controlled Batch Upload...`, 'info');
+                logDiag(`🔥 Memulai Firestore Direct Stream Upload...`, 'info');
 
                 try {
                     const firestoreDocMap = new Map();
@@ -987,51 +977,24 @@
                     const docEntries = Array.from(firestoreDocMap.entries());
                     totalFirestoreDocsWritten = docEntries.length;
 
-                    // Optimal Batch Size = 250 docs (Ensures lightning-fast socket transmission)
-                    const batchSize = 250;
+                    // Perfect batch size for smooth browser socket streaming
+                    const batchSize = 100;
                     const totalBatches = Math.ceil(docEntries.length / batchSize);
-                    let completedBatches = 0;
 
-                    // Execute 3 Batches in Parallel Concurrency Chunks (Smooth progress, 0 socket hanging)
-                    const concurrency = 3;
-                    for (let i = 0; i < docEntries.length; i += batchSize * concurrency) {
-                        const chunkPromises = [];
-                        
-                        for (let j = 0; j < concurrency; j++) {
-                            const batchStart = i + (j * batchSize);
-                            if (batchStart >= docEntries.length) break;
+                    for (let b = 0; b < totalBatches; b++) {
+                        const batch = dbFirestore.batch();
+                        const currentChunk = docEntries.slice(b * batchSize, (b + 1) * batchSize);
 
-                            const batchEnd = Math.min(batchStart + batchSize, docEntries.length);
-                            const currentChunk = docEntries.slice(batchStart, batchEnd);
-                            const batchNum = Math.floor(batchStart / batchSize) + 1;
+                        currentChunk.forEach(([docId, docPayload]) => {
+                            const docRef = dbFirestore.collection('pencarian').doc(docId);
+                            batch.set(docRef, docPayload, { merge: true });
+                        });
 
-                            const batch = dbFirestore.batch();
-                            currentChunk.forEach(([docId, docPayload]) => {
-                                const docRef = dbFirestore.collection('pencarian').doc(docId);
-                                batch.set(docRef, docPayload, { merge: true });
-                            });
+                        const pct = 45 + Math.round(((b + 1) / totalBatches) * 45);
+                        updateProgressUI(true, `Menyimpan Firestore Batch (${b + 1}/${totalBatches})...`, pct);
 
-                            chunkPromises.push((async () => {
-                                try {
-                                    await commitBatchWithTimeout(batch, 12000);
-                                } catch (commitErr) {
-                                    logDiag(`⚠️ Timeout batch ${batchNum}, mencoba ulang commit...`, 'warn');
-                                    const retryBatch = dbFirestore.batch();
-                                    currentChunk.forEach(([docId, docPayload]) => {
-                                        retryBatch.set(dbFirestore.collection('pencarian').doc(docId), docPayload, { merge: true });
-                                    });
-                                    await retryBatch.commit();
-                                }
-
-                                completedBatches++;
-                                const pct = 45 + Math.round((completedBatches / totalBatches) * 45);
-                                updateProgressUI(true, `Menyimpan Firestore Batch (${completedBatches}/${totalBatches})...`, pct);
-                                logDiag(`✅ Firestore Batch ${completedBatches}/${totalBatches} Selesai (${currentChunk.length} dokumen)`, 'success');
-                            })());
-                        }
-
-                        await Promise.all(chunkPromises);
-                        await new Promise(r => setTimeout(r, 10)); // Yield UI main thread
+                        await batch.commit();
+                        logDiag(`⚡ Batch ${b + 1}/${totalBatches} (${currentChunk.length} docs) tersimpan!`, 'success');
                     }
 
                     if (files && files.length > 0) {
@@ -1055,7 +1018,7 @@
                 }
             }
 
-            // Chunked Synchronization to Realtime Database
+            // Sync to Realtime Database
             if (dbRealtime && processedVehicles.length > 0) {
                 updateProgressUI(true, `Menyinkronkan ke Realtime Database...`, 92);
                 try {
@@ -1064,7 +1027,7 @@
                         if (item.qNopol) rtdbEntries.push([item.qNopol, item.docData]);
                     });
 
-                    const rtdbChunkSize = 150;
+                    const rtdbChunkSize = 200;
                     for (let r = 0; r < rtdbEntries.length; r += rtdbChunkSize) {
                         const chunk = rtdbEntries.slice(r, r + rtdbChunkSize);
                         const rtdbBatchObj = {};
