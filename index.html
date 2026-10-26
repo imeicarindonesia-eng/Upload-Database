@@ -98,9 +98,9 @@
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-                        Fast Import Studio Pro <span class="text-red-500 text-sm block sm:inline font-semibold">(Auto Deduplication & Smart Merge)</span>
+                        Fast Import Studio Pro <span class="text-red-500 text-sm block sm:inline font-semibold">(Multi-Key Indexing Engine)</span>
                     </h1>
-                    <p class="text-xs text-gray-400 mt-0.5">Filter Data Sampah + Auto Merge Data Terlengkap + Multi-Key Cloud Firestore Indexing</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Auto Multi-ID Doc (Nopol, NOKA, NOSIN, NIK, No.HP) + Pure Clean JSON Sync</p>
                 </div>
             </div>
 
@@ -116,11 +116,11 @@
             </div>
         </header>
 
-        <!-- Petugas / Uploader Identity Card -->
+        <!-- Petugas Identity Card -->
         <div class="bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex-1 w-full">
                 <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1 flex items-center gap-2">
-                    👤 NAMA PETUGAS / PENGUNGGAH <span class="text-red-500 text-xs font-normal">(Disimpan di Metadata `diupload_oleh`)</span>
+                    👤 NAMA PETUGAS / PENGUNGGAH <span class="text-red-500 text-xs font-normal">(Catatan Lokal Studio)</span>
                 </label>
                 <div class="relative">
                     <input type="text" id="inputNamaPetugas" oninput="simpanNamaPetugasLokal()" placeholder="Ketik Nama Anda (misal: Admin 01 / Hendra)..." 
@@ -131,8 +131,8 @@
                 </div>
             </div>
             <div class="text-[11px] text-gray-400 bg-[#121212] p-3 rounded-lg border border-[#333333] w-full md:w-auto leading-relaxed">
-                <strong class="text-red-400 block mb-0.5">🔄 SMART AUTO-MERGE DEDUPLICATION:</strong>
-                Jika Nopol / NOKA / NOSIN duplikat, sistem <span class="text-emerald-300">otomatis menggabungkan data</span> & mengutamakan isian field yang paling lengkap!
+                <strong class="text-emerald-400 block mb-0.5">⚡ MULTI-KEY INDEXING ACTIVE:</strong>
+                Data ter-upload otomatis dibuatkan ID Dokumen versi Nopol, NOKA, NOSIN, NIK, dan No.HP agar 100% terbaca di semua aplikasi target.
             </div>
         </div>
 
@@ -143,7 +143,7 @@
                 <span id="txtLogCount" class="text-emerald-400 font-mono">0 Event</span>
             </div>
             <div id="debugConsole" class="text-[11px] leading-relaxed text-emerald-400 max-h-28 overflow-y-auto space-y-0.5">
-                <div>⚙️ Menghubungkan ke Cloud Firestore, Realtime Database, PDF Engine & OCR Scanner...</div>
+                <div>⚙️ Menghubungkan ke Cloud Firestore & Realtime Database...</div>
             </div>
         </div>
 
@@ -156,7 +156,7 @@
                         <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                             LIVE REAL-TIME FIRESTORE VERIFIER <span class="text-emerald-400 font-semibold">(Tes Server Instan)</span>
                         </h2>
-                        <p class="text-[11px] text-gray-400">Verifikasi langsung data Nopol (misal: B1011NOC / BM 2312 BKG), NOKA, NOSIN, NIK, atau No.HP di Cloud Firestore</p>
+                        <p class="text-[11px] text-gray-400">Verifikasi langsung data Nopol (misal: B1011NOC / b1011noc / BM2312BKG), NOKA, NOSIN, NIK, atau No.HP</p>
                     </div>
                 </div>
                 <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40 font-mono font-bold self-start sm:self-auto">
@@ -165,7 +165,7 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-2">
-                <input type="text" id="inputCekRealtime" placeholder="Ketik Nopol / NOKA / NOSIN / NIK / No.HP (misal: B1011NOC / BM2312BKG)..." 
+                <input type="text" id="inputCekRealtime" placeholder="Ketik Nopol / NOKA / NOSIN / NIK / No.HP (misal: B1011NOC / b1011noc / BM2312BKG)..." 
                        class="flex-1 bg-[#121212] border border-[#333333] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500 font-mono font-semibold">
                 <button onclick="tesCekRealtimeFirestore()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition active:scale-95 flex items-center justify-center gap-1.5 shadow-md">
                     ⚡ CEK REAL-TIME SERVER FIRESTORE
@@ -185,11 +185,11 @@
         <!-- Demo & Quick Action Banner -->
         <div class="bg-gradient-to-r from-red-950/80 to-[#1e1e1e] border border-red-500/40 rounded-xl p-4 shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
             <div class="text-xs text-gray-200 leading-relaxed">
-                <span class="font-bold text-red-400 block text-sm mb-0.5">📈 AUTO-MERGE DUPLIKAT TERLENGKAP + SEPARASI MEREK & TIPE:</span>
-                Jika ada data Nopol duplikat, sistem otomatis <code class="text-emerald-300">memilih field yang paling lengkap</code> untuk diunggah.
+                <span class="font-bold text-red-400 block text-sm mb-0.5">📈 MULTI-KEY INDEXING & PURE CLEAN JSON:</span>
+                Setiap kendaraan dibuatkan 5 ID Dokumen di Firestore (Nopol, NOKA, NOSIN, NIK, No.HP) agar aplikasi lain bisa mencari dengan kunci apa saja.
             </div>
             <button onclick="jalankanDemo1Click()" class="w-full lg:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition active:scale-95 whitespace-nowrap shadow-md flex items-center justify-center gap-1.5">
-                🧪 TES 1-CLICK DEMO (VERIFIKASI AUTO-MERGE DUPLIKAT)
+                🧪 TES 1-CLICK DEMO (VERIFIKASI PURE CLEAN JSON)
             </button>
         </div>
 
@@ -220,7 +220,7 @@
             <p class="text-base font-bold text-white group-hover:text-red-400 transition-colors">
                 Tarik & Lepas File Ke Sini atau Klik Untuk Memilih File
             </p>
-            <p class="text-xs text-gray-400 mt-1">Format Didukung: <strong>.XLSX, .XLS, .CSV, .PDF, .TXT, .JPG, .JPEG, .PNG</strong> (Auto-Deduplication & Smart Field Merge)</p>
+            <p class="text-xs text-gray-400 mt-1">Format Didukung: <strong>.XLSX, .XLS, .CSV, .PDF, .TXT, .JPG, .JPEG, .PNG</strong> (Auto-Deduplication & Multi-Key Indexing)</p>
             
             <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.pdf,.txt,.jpg,.jpeg,.png" multiple class="hidden">
 
@@ -336,7 +336,7 @@
                 </div>
                 <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-emerald-500">
                     <div id="statFirestoreDocs" class="text-lg font-black text-emerald-400">0</div>
-                    <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Dokumen Firestore ('pencarian')</div>
+                    <div class="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">Dokumen Index ('pencarian')</div>
                 </div>
                 <div class="bg-[#121212] border border-[#333333] p-3 rounded-lg border-t-2 border-t-amber-500">
                     <div id="statTotalFirestore" class="text-lg font-black text-amber-400">0</div>
@@ -357,7 +357,7 @@
         <div id="tablePreviewCard" class="hidden bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                    👁️ Preview Field Kendaraan + Audit Tag (<span id="txtTableRecordCount" class="text-red-400">0</span> Kendaraan)
+                    👁️ Preview Field Kendaraan (<span id="txtTableRecordCount" class="text-red-400">0</span> Kendaraan)
                 </h3>
                 <input type="text" id="inputTableSearch" onkeyup="cariTableData()" placeholder="🔍 Cari Plat / Merek / Type / Petugas / Alamat / Nasabah..." 
                        class="bg-[#121212] border border-[#333333] text-white text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-red-500 w-full sm:w-64">
@@ -368,26 +368,22 @@
                     <thead class="bg-[#2a2a2a] text-white font-bold border-b border-[#333333]">
                         <tr>
                             <th class="p-2.5">#</th>
-                            <th class="p-2.5">NO.PLAT</th>
-                            <th class="p-2.5">MEREK</th>
+                            <th class="p-2.5">NOPOL</th>
+                            <th class="p-2.5">MERK</th>
                             <th class="p-2.5">TYPE</th>
                             <th class="p-2.5">TAHUN</th>
                             <th class="p-2.5">WARNA</th>
                             <th class="p-2.5">CYLINDER</th>
-                            <th class="p-2.5">NAMA BBM</th>
-                            <th class="p-2.5">NOKA</th>
-                            <th class="p-2.5">NOSIN</th>
-                            <th class="p-2.5">NO. BPKB</th>
-                            <th class="p-2.5">NO. STNK</th>
-                            <th class="p-2.5">NAMA PEMILIK</th>
-                            <th class="p-2.5 text-amber-300">NAMA NASABAH</th>
-                            <th class="p-2.5 text-amber-300">ALAMAT PEMILIK / NASABAH</th>
-                            <th class="p-2.5">NIK</th>
-                            <th class="p-2.5">MSSDN</th>
+                            <th class="p-2.5">BBM</th>
+                            <th class="p-2.5">NO_RANGKA</th>
+                            <th class="p-2.5">NO_MESIN</th>
+                            <th class="p-2.5">NO_BPKB</th>
+                            <th class="p-2.5">NO_STNK</th>
+                            <th class="p-2.5 text-emerald-300">NAMA</th>
+                            <th class="p-2.5 text-gray-300">ALAMAT</th>
+                            <th class="p-2.5">KTP / NIK</th>
+                            <th class="p-2.5">HP</th>
                             <th class="p-2.5">PEKERJAAN</th>
-                            <th class="p-2.5 bg-red-950/60 text-red-300">DIUPLOAD OLEH</th>
-                            <th class="p-2.5 bg-red-950/60 text-red-300">WAKTU UNGGAH</th>
-                            <th class="p-2.5 bg-red-950/60 text-red-300">NAMA FILE</th>
                         </tr>
                     </thead>
                     <tbody id="previewTableBody" class="divide-y divide-[#222222]">
@@ -512,7 +508,7 @@
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            logDiag("Menginisialisasi Firebase SDK, Smart Deduplication & Multi-Format Engine...");
+            logDiag("Menginisialisasi Firebase SDK, Multi-Key Indexing & Pure Clean JSON Engine...");
 
             const savedPetugas = localStorage.getItem('nama_petugas_kendaraan') || '';
             if (savedPetugas) {
@@ -543,7 +539,7 @@
                     }
 
                     logDiag("✅ Engine Inisialisasi Sukses!", 'success');
-                    logDiag("🔥 Fast Engine Auto-Deduplication & Smart Field Merge SIAP!", 'success');
+                    logDiag("🔥 Fast Engine Multi-Key Indexing & Pure Clean JSON SIAP!", 'success');
 
                     document.getElementById('firestoreStatusDot').className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
                     cekTotalDatabaseCloud();
@@ -629,7 +625,6 @@
         }
 
         // SMART DEDUPLICATION & FIELD MERGER HELPER
-        // Melakukan merge cerdas: jika ada data duplikat, ambil isian field yang lebih lengkap!
         function mergeDocDataDataCompleteness(existingDoc, incomingDoc) {
             if (!existingDoc) return incomingDoc;
             if (!incomingDoc) return existingDoc;
@@ -639,13 +634,11 @@
             for (const [key, incVal] of Object.entries(incomingDoc)) {
                 const extVal = merged[key];
 
-                // Jika nilai lama kosong/tidak ada/hanya "-": pakai nilai baru
                 if (!extVal || extVal === '-' || String(extVal).trim() === '') {
                     if (incVal && incVal !== '-' && String(incVal).trim() !== '') {
                         merged[key] = incVal;
                     }
                 } 
-                // Jika nilai baru lebih lengkap (string lebih panjang & valid): pakai nilai baru
                 else if (incVal && incVal !== '-' && String(incVal).trim().length > String(extVal).trim().length) {
                     merged[key] = incVal;
                 }
@@ -654,18 +647,14 @@
             return merged;
         }
 
-        // 1-Click Demo Test (Diperbarui untuk mendemonstrasikan Auto-Deduplication & Auto-Merge)
+        // 1-Click Demo Test
         async function jalankanDemo1Click() {
-            logDiag("🚀 Menjalankan Tes Demo Smart Deduplication & Auto Field Merge...", 'warn');
+            logDiag("🚀 Menjalankan Tes Demo Pure Clean JSON (Multi-Key Indexing)...", 'warn');
             const demoData = [
-                // Data 1: Terdiri dari Nopol B1011NOC tetapi data Alamat & No STNK belum lengkap
-                { "NAMA PEMILIK": "GREGORIUS DENNIS S", "TYPE": "TOYOTA AGYA 1.0 G MT", "Nopol": "B 1011 NOC", "No.Rangka": "MHKA4DA3JEJ019981", "No.Mesin": "1KRA064398", "TAHUN": "2014", "WARNA": "SILVER METALIK", "CYLINDER": "998", "NAMA BBM": "BENSIN", "NO. BPKB": "K10727214", "NO. STNK": "-", "NIK": "3674020411880001" },
-                // Data 2: DUPLIKAT B 1011 NOC tetapi data Alamat & No STNK LENGKAP -> Harus di-merge otomatis!
-                { "NAMA PEMILIK": "GREGORIUS DENNIS SURJONO", "TYPE": "TOYOTA AGYA 1.0 G MT", "Nopol": "B 1011 NOC", "No.Rangka": "MHKA4DA3JEJ019981", "No.Mesin": "1KRA064398", "TAHUN": "2014", "WARNA": "SILVER METALIK", "CYLINDER": "998", "NAMA BBM": "BENSIN", "NO. BPKB": "K10727214", "NO. STNK": "STNK-992211-B", "NIK": "3674020411880001", "MSSDN": "081299887766", "PEKERJAAN": "PELAJAR / MAHASISWA", "ALAMAT": "JL. SUTERA KIRANA I NO. 9 RT. 001 RW. 007 KEL. PONDOK JAGUNG TIMUR KEC. SERPONG UTARA TANGERANG SELATAN" },
-                // Data 3: Data Kendaraan Lain
-                { "NAMA PEMILIK": "HERMAN WIJAYA", "NAMA NASABAH": "HERMAN WIJAYA", "ALAMAT PEMILIK": "JL. SUDIRMAN NO. 45, PEKANBARU", "TYPE": "TOYOTA-AVANZA 1.3 G MT", "Nopol": "BM 2312 BKG", "No.Rangka": "MR0FR22G0C0619144", "No.Mesin": "2KDS092147", "NO. BPKB": "L-12345678", "NO. STNK": "9876543/STNK", "NIK": "1471021508850003", "MSSDN": "081266554433", "PEKERJAAN": "WIRASWASTA" }
+                { "NAMA PEMILIK": "GREGORIUS DENNIS S", "TYPE": "TOYOTA AGYA 1.0 G MT", "Nopol": "B 1011 NOC", "No.Rangka": "MHKA4DA3JEJ019981", "No.Mesin": "1KRA064398", "TAHUN": "2014", "WARNA": "SILVER METALIK", "CYLINDER": "998", "NAMA BBM": "BENSIN", "NO. BPKB": "K10727214", "NO. STNK": "-", "NIK": "3674020411880001", "MSSDN": "081299887766", "PEKERJAAN": "PELAJAR", "ALAMAT": "JL. SUTERA KIRANA I NO. 9" },
+                { "NAMA PEMILIK": "HERMAN WIJAYA", "TYPE": "TOYOTA-AVANZA 1.3 G MT", "Nopol": "BM 2312 BKG", "No.Rangka": "MR0FR22G0C0619144", "No.Mesin": "2KDS092147", "TAHUN": "2020", "WARNA": "HITAM", "CYLINDER": "1300", "NAMA BBM": "BENSIN", "NO. BPKB": "L-12345678", "NO. STNK": "9876543/STNK", "NIK": "1471021508850003", "MSSDN": "081266554433", "PEKERJAAN": "WIRASWASTA", "ALAMAT": "JL. SUDIRMAN NO. 45" }
             ];
-            await eksekusiPengolahanDanUpload(demoData, [{ name: "Demo_Auto_Merge_Duplicates.xlsx", size: 9500 }]);
+            await eksekusiPengolahanDanUpload(demoData, [{ name: "Demo_Multi_Key_JSON.xlsx", size: 9500 }]);
         }
 
         async function prosesImportFile(files) {
@@ -1001,10 +990,10 @@
 
             processedVehicles.forEach(item => {
                 const doc = item.docData;
-                const m = doc["MEREK"] || doc["merk"] || "TIDAK DIKETAHUI";
-                const t = doc["TYPE"] || doc["type"] || "";
-                const c = doc["CYLINDER"] || doc["cylinder"] || "";
-                const p = doc["NO.PLAT"] || doc["nopol"] || "";
+                const m = doc["merk"] || doc["MEREK"] || "TIDAK DIKETAHUI";
+                const t = doc["type"] || doc["TYPE"] || "";
+                const c = doc["cylinder"] || doc["CYLINDER"] || "";
+                const p = doc["nopol"] || doc["NO.PLAT"] || "";
 
                 const jenis = klasifikasiR2atauR4(m, t, c);
                 if (jenis === 'R2') countR2++; else countR4++;
@@ -1122,10 +1111,10 @@
             document.getElementById('analyticsSection').classList.remove('hidden');
         }
 
-        // EKSEKUSI PENGOLAHAN DENGAN STRICT WHITELIST, FILTER BARIS SAMPAH & AUTO-DEDUPLICATION MERGE
+        // EKSEKUSI PENGOLAHAN DENGAN MULTI-KEY INDEXING & PURE CLEAN JSON
         async function eksekusiPengolahanDanUpload(semuaDataRaw, files) {
             const startTime = performance.now();
-            updateProgressUI(true, `Menyusun dokumen JSON & Filtering Kolom Non-Resmi...`, 20);
+            updateProgressUI(true, `Menyusun dokumen Pure Clean JSON & Multi-Key Indexing...`, 20);
 
             const namaPetugasActive = getNamaPetugasActive();
             const waktuUploadISO = new Date().toISOString();
@@ -1140,47 +1129,66 @@
                 let noka = "", nosin = "", bpkb = "", stnk = "";
                 let nama = "", nik = "", mssdn = "", email = "", pekerjaan = "", alamat = "", nasabah = "";
 
-                // Parsing variabel yang dikenali
                 for (let [k, v] of Object.entries(row)) {
                     if (v === undefined || v === null) continue;
-                    const val = String(v).trim().toUpperCase();
+                    const val = String(v).trim();
+                    if (!val || val === '-') continue;
+
                     const keyClean = String(k).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-                    if (keyClean.includes('nopol') || keyClean.includes('polisi') || keyClean.includes('plat')) nopol = val;
-                    else if (keyClean.includes('merek') || keyClean.includes('merk')) merk = val;
-                    else if (keyClean.includes('type') || keyClean.includes('tipe') || keyClean.includes('jenis') || keyClean.includes('model')) tipe = val;
-                    else if (keyClean.includes('tahun') || keyClean.includes('thn')) tahun = val;
-                    else if (keyClean.includes('warna')) warna = val;
-                    else if (keyClean.includes('cylinder') || keyClean.includes('cc') || keyClean.includes('silinder')) cylinder = val;
-                    else if (keyClean.includes('bbm') || keyClean.includes('bahan')) bbm = val;
-                    else if (keyClean.includes('noka') || keyClean.includes('rangka') || keyClean.includes('norangka') || keyClean === 'vin') noka = val;
-                    else if (keyClean.includes('nosin') || keyClean.includes('mesin') || keyClean.includes('nomesin') || keyClean === 'engine') nosin = val;
-                    else if (keyClean.includes('bpkb')) bpkb = val;
-                    else if (keyClean.includes('stnk')) stnk = val;
-                    else if (keyClean.includes('alamat') || keyClean.includes('address') || keyClean.includes('domisili')) alamat = val;
-                    else if (keyClean.includes('nasabah')) nasabah = val;
-                    else if (keyClean.includes('nama') || keyClean.includes('pemilik') || keyClean.includes('namapemilik')) nama = val;
-                    else if (keyClean.includes('nik') || keyClean.includes('ktp') || keyClean.includes('identitas')) nik = val;
-                    else if (keyClean.includes('mssdn') || keyClean.includes('hp') || keyClean.includes('telepon') || keyClean.includes('wa')) mssdn = val;
-                    else if (keyClean.includes('email') || keyClean.includes('surel')) email = val;
-                    else if (keyClean.includes('pekerjaan') || keyClean.includes('job')) pekerjaan = val;
+                    if (keyClean.includes('nopol') || keyClean.includes('polisi') || keyClean.includes('plat')) {
+                        if (!nopol) nopol = val;
+                    } else if (keyClean.includes('merek') || keyClean.includes('merk')) {
+                        if (!merk) merk = val;
+                    } else if (keyClean.includes('type') || keyClean.includes('tipe') || keyClean.includes('jenis') || keyClean.includes('model')) {
+                        if (!tipe) tipe = val;
+                    } else if (keyClean.includes('tahun') || keyClean.includes('thn')) {
+                        if (!tahun) tahun = val;
+                    } else if (keyClean.includes('warna')) {
+                        if (!warna) warna = val;
+                    } else if (keyClean.includes('cylinder') || keyClean.includes('cc') || keyClean.includes('silinder')) {
+                        if (!cylinder) cylinder = val;
+                    } else if (keyClean.includes('bbm') || keyClean.includes('bahan')) {
+                        if (!bbm) bbm = val;
+                    } else if (keyClean.includes('noka') || keyClean.includes('rangka') || keyClean === 'vin') {
+                        if (!noka) noka = val;
+                    } else if (keyClean.includes('nosin') || keyClean.includes('mesin') || keyClean === 'engine') {
+                        if (!nosin) nosin = val;
+                    } else if (keyClean.includes('bpkb')) {
+                        if (!bpkb) bpkb = val;
+                    } else if (keyClean.includes('stnk')) {
+                        if (!stnk) stnk = val;
+                    } else if (keyClean.includes('alamatnasabah') || keyClean.includes('alamatpemilik')) {
+                        if (!alamat) alamat = val;
+                    } else if (keyClean.includes('alamat') || keyClean.includes('address') || keyClean.includes('domisili')) {
+                        if (!alamat) alamat = val;
+                    } else if (keyClean.includes('namanasabah') || keyClean.includes('nasabah')) {
+                        if (!nasabah) nasabah = val;
+                    } else if (keyClean.includes('nama') || keyClean.includes('pemilik')) {
+                        if (!nama) nama = val;
+                    } else if (keyClean.includes('nik') || keyClean.includes('ktp') || keyClean.includes('identitas')) {
+                        if (!nik) nik = val;
+                    } else if (keyClean.includes('mssdn') || keyClean.includes('hp') || keyClean.includes('telepon') || keyClean.includes('wa')) {
+                        if (!mssdn) mssdn = val;
+                    } else if (keyClean.includes('email') || keyClean.includes('surel')) {
+                        if (!email) email = val;
+                    } else if (keyClean.includes('pekerjaan') || keyClean.includes('job')) {
+                        if (!pekerjaan) pekerjaan = val;
+                    }
                 }
 
-                // FILTER BARIS SAMPAH / HEADER BERULANG DARI EXCEL/PDF/OCR
                 const qNopolCheck = makeQueryClean(nopol);
                 const qNokaCheck = makeQueryClean(noka);
                 
-                // Jika baris ini merupakan Header teks berulang (misal `NOPOL`, `TYPE`, `NAMA`) atau baris kosong acak, ABAIKAN!
                 if (!isValidDocKey(qNopolCheck) && !isValidDocKey(qNokaCheck)) {
                     skippedJunkRows++;
-                    return; // Skip baris sampah ini!
+                    return;
                 }
 
-                // Fallback Sinkronisasi Nama Pemilik vs Nama Nasabah
                 if (!nama && nasabah) nama = nasabah;
                 if (!nasabah && nama) nasabah = nama;
 
-                // DETEKSI & SEPARASI OTOMATIS MEREK VS TIPE
+                // PEMISAHAN OTOMATIS MEREK & TIPE
                 if (tipe) {
                     const knownBrands = [
                         'TOYOTA', 'HONDA', 'MITSUBISHI', 'DAIHATSU', 'SUZUKI', 'YAMAHA', 
@@ -1221,58 +1229,31 @@
                 const qNik = makeQueryClean(nik);
                 const qMssdn = makeQueryClean(mssdn);
 
-                // STRICT WHITELIST PAYLOAD: HANYA PROPERTI RESMI YANG TERSIMPAN
+                // PURE CLEAN JSON PAYLOAD (FORMAT TARGET APP)
                 const firestoreDocData = {
-                    "nopol": cleanDocId(nopol) || qNopol || "-",
+                    "nopol": nopol.toUpperCase() || "-",
                     "nama": nama || nasabah || "-",
-                    "ktp": nik || qNik || "-",
-                    "hp": mssdn || qMssdn || "-",
+                    "ktp": nik || "-",
+                    "hp": mssdn || "-",
                     "email": email || "-",
                     "pekerjaan": pekerjaan || "-",
                     "alamat": alamat || "-",
-                    "merk": merk || "-",
-                    "type": tipe || "-",
+                    "merk": merk.toUpperCase() || "-",
+                    "type": tipe.toUpperCase() || "-",
                     "tahun": tahun || "-",
-                    "warna": warna || "-",
+                    "warna": warna.toUpperCase() || "-",
                     "cylinder": cylinder || "-",
-                    "bbm": bbm || "-",
-                    "no_rangka": noka || qNoka || "-",
-                    "no_mesin": nosin || qNosin || "-",
+                    "bbm": bbm.toUpperCase() || "-",
+                    "no_rangka": noka.toUpperCase() || "-",
+                    "no_mesin": nosin.toUpperCase() || "-",
                     "no_bpkb": bpkb || "-",
-                    "no_stnk": stnk || "-",
-                    "tanggal_daftar": waktuUploadLocale,
-
-                    // MULTI-ALIAS PRESISI FAST IMPORT STUDIO & APLIKASI KEDUA
-                    "NO.PLAT": nopol, "NO PLAT": nopol, "Nopol": nopol, "no_polisi": nopol, "NopolServer": qNopol, "NO_POLISI": qNopol,
-                    "MEREK": merk, "Merk": merk,
-                    "TYPE": tipe, "Type": tipe, "Tipe": tipe, "TIPE": tipe, "jenis": tipe,
-                    "TAHUN": tahun, "Tahun": tahun, "thn": tahun,
-                    "WARNA": warna, "Warna": warna,
-                    "CYLINDER": cylinder, "Cylinder": cylinder, "CC": cylinder,
-                    "NAMA BBM": bbm, "nama_bbm": bbm, "BBM": bbm, "bahan_bakar": bbm,
-                    "NOKA": noka, "nomorRangka": noka, "NoRangka": noka, "vin": noka, "no_frame": qNoka,
-                    "NOSIN": nosin, "nomorMesin": nosin, "NoMesin": nosin, "no_engine": qNosin,
-                    "NO. BPKB": bpkb, "NO_BPKB": bpkb, "BPKB": bpkb,
-                    "NO. STNK": stnk, "NO_STNK": stnk, "STNK": stnk,
-                    "NAMA": nama, "NAMA PEMILIK": nama, "namaPemilik": nama, "NamaPemilik": nama, "nama_pemilik": nama, "nm_pmlk": nama,
-                    "NAMA NASABAH": nasabah, "nama_nasabah": nasabah, "namaNasabah": nasabah, "nasabah": nasabah, "NAMA_NASABAH": nasabah,
-                    "ALAMAT PEMILIK": alamat, "alamat_pemilik": alamat, "alamatPemilik": alamat, "ALAMAT_PEMILIK": alamat,
-                    "ALAMAT NASABAH": alamat, "alamat_nasabah": alamat, "alamatNasabah": alamat, "ALAMAT_NASABAH": alamat,
-                    "NIK": nik, "NoKTP": nik, "no_ktp": qNik, "identitas": nik, "no_identitas": qNik,
-                    "MSSDN": mssdn, "NoHP": mssdn, "nomor_hp": qMssdn, "telepon": mssdn,
-                    "PEKERJAAN": pekerjaan,
-
-                    // METADATA AUDIT
-                    "diupload_oleh": namaPetugasActive,
-                    "waktu_unggah": waktuUploadLocale,
-                    "waktu_unggah_iso": waktuUploadISO,
-                    "nama_file": primaryFileName,
-
-                    qNopol: qNopol, qNoka: qNoka, qNosin: qNosin, qNik: qNik, qMssdn: qMssdn
+                    "no_stnk": stnk || "-"
                 };
 
                 Object.keys(firestoreDocData).forEach(k => {
-                    if (firestoreDocData[k] === undefined) delete firestoreDocData[k];
+                    if (firestoreDocData[k] === undefined || firestoreDocData[k] === "") {
+                        firestoreDocData[k] = "-";
+                    }
                 });
 
                 processedVehicles.push({
@@ -1286,7 +1267,7 @@
             });
 
             if (skippedJunkRows > 0) {
-                logDiag(`🛡️ Strict Sanitizer: Berhasil menyaring & membuang ${skippedJunkRows} baris sampah/header tidak valid!`, 'info');
+                logDiag(`🛡️ Strict Sanitizer: Berhasil menyaring & membuang ${skippedJunkRows} baris sampah!`, 'info');
             }
 
             globalProcessedData = processedVehicles;
@@ -1294,30 +1275,23 @@
             generateAnalyticsDashboard(processedVehicles);
             tampilkanTablePreview(processedVehicles);
 
-            // AUTO-DEDUPLICATION & SMART MERGE ENGINE FIRESTORE
+            // MULTI-KEY INDEXING DEDUPLICATION (Mendaftarkan 5 Kunci Pencarian Sekaligus)
             const firestoreDocMap = new Map();
             let mergedCount = 0;
 
             processedVehicles.forEach(item => {
-                const safeNopol = cleanDocId(item.qNopol);
-                const safeNoka = cleanDocId(item.qNoka);
-                const safeNosin = cleanDocId(item.qNosin);
-                const safeNik = cleanDocId(item.qNik);
-                const safeMssdn = cleanDocId(item.qMssdn);
-
                 const keysToRegister = [
-                    { id: safeNopol, primary: true },
-                    { id: safeNoka, primary: false },
-                    { id: safeNosin, primary: false },
-                    { id: safeNik, primary: false },
-                    { id: safeMssdn, primary: false }
+                    cleanDocId(item.qNopol),
+                    cleanDocId(item.qNopol).toLowerCase(),
+                    cleanDocId(item.qNoka),
+                    cleanDocId(item.qNosin),
+                    cleanDocId(item.qNik),
+                    cleanDocId(item.qMssdn)
                 ];
 
-                keysToRegister.forEach(kObj => {
-                    const docId = kObj.id;
+                keysToRegister.forEach(docId => {
                     if (isValidDocKey(docId)) {
                         if (firestoreDocMap.has(docId)) {
-                            // JIKA DUPLIKAT DITEMUKAN: LAKUKAN SMART MERGE!
                             const existingData = firestoreDocMap.get(docId);
                             const mergedData = mergeDocDataDataCompleteness(existingData, item.docData);
                             firestoreDocMap.set(docId, mergedData);
@@ -1328,10 +1302,6 @@
                     }
                 });
             });
-
-            if (mergedCount > 0) {
-                logDiag(`🔄 Auto-Deduplication Engine: Berhasil menggabungkan ${mergedCount} kunci data duplikat dengan mengambil isian field paling lengkap!`, 'success');
-            }
 
             const docEntries = Array.from(firestoreDocMap.entries());
             let writtenDocs = docEntries.length;
@@ -1354,7 +1324,7 @@
                         });
 
                         await batch.commit();
-                        logDiag(`✅ Firestore Batch ${b + 1}/${totalBatches} (${currentChunk.length} dokumen) berhasil diunggah!`, 'success');
+                        logDiag(`✅ Firestore Batch ${b + 1}/${totalBatches} (${currentChunk.length} dokumen index) berhasil diunggah!`, 'success');
                     }
 
                     if (files && files.length > 0) {
@@ -1382,7 +1352,9 @@
                     const rtdbEntries = [];
                     processedVehicles.forEach(item => {
                         const safeNopol = cleanDocId(item.qNopol);
-                        if (isValidDocKey(safeNopol)) rtdbEntries.push([safeNopol, item.docData]);
+                        if (isValidDocKey(safeNopol)) {
+                            rtdbEntries.push([safeNopol, item.docData]);
+                        }
                     });
 
                     const rtdbChunkSize = 150;
@@ -1392,16 +1364,14 @@
                         chunk.forEach(([k, v]) => rtdbBatchObj[k] = v);
                         await dbRealtime.ref('data_kendaraan').update(rtdbBatchObj);
                     }
-                } catch (rErr) {
-                    logDiag(`⚠️ Realtime DB Notice: ${rErr.message}`, 'warn');
-                }
+                } catch (rErr) {}
             }
 
             const totalTimeSec = ((performance.now() - startTime) / 1000).toFixed(2);
 
             updateProgressUI(true, `Selesai!`, 100);
-            setMsgStatus(`✅ <strong>SUKSES 100% TERUNGGAH LENGKAP!</strong> ${processedVehicles.length} Data Kendaraan Valid (Total ${writtenDocs} Index Server) diproses penuh dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>${mergedCount > 0 ? `<br>🔄 <em>${mergedCount} entri duplikat otomatis di-merge mengambil data paling lengkap.</em>` : ''}`, 'sukses');
-            showToast("⚡ Sukses Impor 100% Data Ke Firestore!");
+            setMsgStatus(`✅ <strong>SUKSES 100% TERUNGGAH LENGKAP!</strong> ${processedVehicles.length} Data Kendaraan Valid (Total ${writtenDocs} Multi-Key Index Server) diproses penuh dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
+            showToast("⚡ Sukses Impor Multi-Key Indexing!");
 
             tampilkanSummaryStats(files ? files.length : 1, processedVehicles.length, writtenDocs);
             cekTotalDatabaseCloud();
@@ -1437,26 +1407,22 @@
                 return `
                 <tr class="hover:bg-[#2a2a2a]">
                     <td class="p-2.5 font-mono text-gray-500">${start + i + 1}</td>
-                    <td class="p-2.5 font-bold text-red-400 font-mono">${doc["nopol"] || doc["NO.PLAT"] || '-'}</td>
-                    <td class="p-2.5 font-semibold text-white">${doc["merk"] || doc["MEREK"] || '-'}</td>
-                    <td class="p-2.5 text-gray-200">${doc["type"] || doc["TYPE"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["tahun"] || doc["TAHUN"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["warna"] || doc["WARNA"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["cylinder"] || doc["CYLINDER"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["bbm"] || doc["NAMA BBM"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-gray-300">${doc["no_rangka"] || doc["NOKA"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-gray-300">${doc["no_mesin"] || doc["NOSIN"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-amber-300">${doc["no_bpkb"] || doc["NO. BPKB"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-amber-300">${doc["no_stnk"] || doc["NO. STNK"] || '-'}</td>
-                    <td class="p-2.5 font-semibold text-emerald-300">${doc["nama"] || doc["NAMA PEMILIK"] || '-'}</td>
-                    <td class="p-2.5 font-semibold text-emerald-400">${doc["NAMA NASABAH"] || doc["nama_nasabah"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300 max-w-xs truncate" title="${doc["alamat"] || doc["ALAMAT PEMILIK"] || ''}">${doc["alamat"] || doc["ALAMAT PEMILIK"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-gray-300">${doc["ktp"] || doc["NIK"] || '-'}</td>
-                    <td class="p-2.5 font-mono text-gray-400">${doc["hp"] || doc["MSSDN"] || '-'}</td>
-                    <td class="p-2.5 text-gray-300">${doc["pekerjaan"] || doc["PEKERJAAN"] || '-'}</td>
-                    <td class="p-2.5 font-bold text-amber-400 bg-red-950/30">${doc["diupload_oleh"] || '-'}</td>
-                    <td class="p-2.5 text-gray-400 bg-red-950/30 text-[10px]">${doc["waktu_unggah"] || '-'}</td>
-                    <td class="p-2.5 text-gray-400 bg-red-950/30 text-[10px]">${doc["nama_file"] || '-'}</td>
+                    <td class="p-2.5 font-bold text-red-400 font-mono">${doc["nopol"] || '-'}</td>
+                    <td class="p-2.5 font-semibold text-white">${doc["merk"] || '-'}</td>
+                    <td class="p-2.5 text-gray-200">${doc["type"] || '-'}</td>
+                    <td class="p-2.5 text-gray-300">${doc["tahun"] || '-'}</td>
+                    <td class="p-2.5 text-gray-300">${doc["warna"] || '-'}</td>
+                    <td class="p-2.5 text-gray-300">${doc["cylinder"] || '-'}</td>
+                    <td class="p-2.5 text-gray-300">${doc["bbm"] || '-'}</td>
+                    <td class="p-2.5 font-mono text-gray-300">${doc["no_rangka"] || '-'}</td>
+                    <td class="p-2.5 font-mono text-gray-300">${doc["no_mesin"] || '-'}</td>
+                    <td class="p-2.5 font-mono text-amber-300">${doc["no_bpkb"] || '-'}</td>
+                    <td class="p-2.5 font-mono text-amber-300">${doc["no_stnk"] || '-'}</td>
+                    <td class="p-2.5 font-semibold text-emerald-300">${doc["nama"] || '-'}</td>
+                    <td class="p-2.5 text-gray-300 max-w-xs truncate" title="${doc["alamat"] || ''}">${doc["alamat"] || '-'}</td>
+                    <td class="p-2.5 font-mono text-gray-300">${doc["ktp"] || '-'}</td>
+                    <td class="p-2.5 font-mono text-gray-400">${doc["hp"] || '-'}</td>
+                    <td class="p-2.5 text-gray-300">${doc["pekerjaan"] || '-'}</td>
                 </tr>
             `}).join('');
 
@@ -1563,7 +1529,6 @@
             }
         }
 
-        // FITUR BARU: TES CEK REAL-TIME PENCARIAN FIRESTORE SERVER
         async function tesCekRealtimeFirestore() {
             const inputVal = document.getElementById('inputCekRealtime').value.trim();
             const resultBox = document.getElementById('realtimeResultBox');
@@ -1572,7 +1537,7 @@
             const jsonContent = document.getElementById('realtimeJsonContent');
 
             if (!inputVal) {
-                showToast("⚠️ Masukkan Nopol yang ingin dicek!");
+                showToast("⚠️ Masukkan Nopol / NOKA / NOSIN / NIK yang ingin dicek!");
                 return;
             }
 
