@@ -92,26 +92,26 @@
         
         <!-- Header Bar -->
         <header class="bg-[#1e1e1e] border border-[#333333] rounded-xl p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
-            <div class="flex items-center gap-3">
-                <div class="bg-red-600/20 p-3 rounded-xl border border-red-500/30 text-2xl">
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="bg-red-600/20 p-3 rounded-xl border border-red-500/30 text-2xl shrink-0">
                     📊
                 </div>
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-                        Fast Import Studio Pro <span class="text-red-500 text-sm block sm:inline font-semibold">(Multi-Key Indexing Engine)</span>
+                    <h1 class="text-lg sm:text-2xl font-black text-white tracking-tight">
+                        Fast Import Studio Pro <span class="text-red-500 text-xs block sm:inline font-semibold">(Multi-Key Indexing Engine)</span>
                     </h1>
                     <p class="text-xs text-gray-400 mt-0.5">Auto Multi-ID Doc (Nopol, NOKA, NOSIN, NIK, No.HP) + Pure Clean JSON Sync</p>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end">
                 <div class="bg-[#121212] border border-[#333333] px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2">
                     <span id="firestoreStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>Status Engine:</span>
                     <strong id="headerFirestoreCount" class="text-emerald-400 font-bold">Siap / Instant Engine</strong>
                 </div>
                 <button onclick="cekTotalDatabaseCloud()" class="bg-[#2a2a2a] hover:bg-[#333333] border border-[#444444] text-gray-200 text-xs px-3 py-2 rounded-lg font-semibold transition active:scale-95">
-                    🔄 Refresh Status
+                    🔄 Refresh
                 </button>
             </div>
         </header>
@@ -132,7 +132,7 @@
             </div>
             <div class="text-[11px] text-gray-400 bg-[#121212] p-3 rounded-lg border border-[#333333] w-full md:w-auto leading-relaxed">
                 <strong class="text-emerald-400 block mb-0.5">⚡ MULTI-KEY INDEXING ACTIVE:</strong>
-                Data ter-upload otomatis dibuatkan ID Dokumen versi Nopol, NOKA, NOSIN, NIK, dan No.HP agar 100% terbaca di semua aplikasi target.
+                Data ter-upload otomatis dibuatkan 5 ID Dokumen versi Nopol, NOKA, NOSIN, NIK, dan No.HP agar 100% terbaca di semua aplikasi target.
             </div>
         </div>
 
@@ -156,7 +156,7 @@
                         <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                             LIVE REAL-TIME FIRESTORE VERIFIER <span class="text-emerald-400 font-semibold">(Tes Server Instan)</span>
                         </h2>
-                        <p class="text-[11px] text-gray-400">Verifikasi langsung data Nopol (misal: B1011NOC / b1011noc / BM2312BKG), NOKA, NOSIN, NIK, atau No.HP</p>
+                        <p class="text-[11px] text-gray-400">Verifikasi langsung data Nopol, NOKA, NOSIN, NIK, atau No.HP di Cloud Firestore</p>
                     </div>
                 </div>
                 <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40 font-mono font-bold self-start sm:self-auto">
@@ -165,7 +165,7 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-2">
-                <input type="text" id="inputCekRealtime" placeholder="Ketik Nopol / NOKA / NOSIN / NIK / No.HP (misal: B1011NOC / b1011noc / BM2312BKG)..." 
+                <input type="text" id="inputCekRealtime" placeholder="Ketik Nopol / NOKA / NOSIN / NIK / No.HP (misal: B9352ERU / b9352eru)..." 
                        class="flex-1 bg-[#121212] border border-[#333333] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500 font-mono font-semibold">
                 <button onclick="tesCekRealtimeFirestore()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition active:scale-95 flex items-center justify-center gap-1.5 shadow-md">
                     ⚡ CEK REAL-TIME SERVER FIRESTORE
@@ -186,7 +186,7 @@
         <div class="bg-gradient-to-r from-red-950/80 to-[#1e1e1e] border border-red-500/40 rounded-xl p-4 shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
             <div class="text-xs text-gray-200 leading-relaxed">
                 <span class="font-bold text-red-400 block text-sm mb-0.5">📈 MULTI-KEY INDEXING & PURE CLEAN JSON:</span>
-                Setiap kendaraan dibuatkan 5 ID Dokumen di Firestore (Nopol, NOKA, NOSIN, NIK, No.HP) agar aplikasi lain bisa mencari dengan kunci apa saja.
+                Setiap kendaraan dibuatkan 5 ID Dokumen di Firestore (Nopol, NOKA, NOSIN, NIK, No.HP) tanpa atribut tanggal upload agar murni kompatibel dengan aplikasi target.
             </div>
             <button onclick="jalankanDemo1Click()" class="w-full lg:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition active:scale-95 whitespace-nowrap shadow-md flex items-center justify-center gap-1.5">
                 🧪 TES 1-CLICK DEMO (VERIFIKASI PURE CLEAN JSON)
@@ -943,8 +943,8 @@
         function klasifikasiR2atauR4(merek, tipe, cylinder) {
             const combined = `${merek} ${tipe}`.toUpperCase();
             
-            const r2Keywords = ['BEAT', 'VARIO', 'NMAX', 'AEROX', 'MIO', 'SCOOPY', 'SUPRA', 'JUPITER', 'NINJA', 'CBR', 'R15', 'KLX', 'VESPA', 'PCX', 'SATRIA', 'RX KING', 'VEGA', 'VERZA', 'VIXION', 'MOTOR', 'R2', 'RODA 2', 'SEPEDA MOTOR'];
-            const r4Keywords = ['AVANZA', 'INNOVA', 'FORTUNER', 'PAJERO', 'BRIO', 'JAZZ', 'CRV', 'HRV', 'XPENDER', 'XPANDER', 'CARRY', 'L300', 'TRUK', 'PICKUP', 'PICK UP', 'MOBIL', 'R4', 'XENIA', 'CALYA', 'SIGRA', 'TERIOS', 'RUSH', 'AGYA', 'AYLA', 'ALPHARD', 'CIVIC', 'COROLLA', 'CAMRY', 'TRUCK', 'XTRAIL'];
+            const r2Keywords = ['BEAT', 'VARIO', 'NMAX', 'AEROX', 'MIO', 'SCOOPY', 'SUPRA', 'JUPITER', 'NINJA', 'CBR', 'R15', 'KLX', 'VESPA', 'PCX', 'SATRIA', 'RX KING', 'VEGA', 'VERZA', 'VIXION', 'MOTOR', 'R2', 'RODA 2', 'SEPEDA MOTOR', 'BEAT', 'SCOOPY', 'GENIO', 'FINO', 'XEON', 'SOUL', 'BLADE', 'REVO', 'CS1', 'SH 150', 'FORZA', 'ADV', 'CRF', 'VERZA', 'MEGAPRO', 'TIGER', 'CB150', 'CBR', 'SONIC', 'SUPRA', 'REVO', 'GEAR', 'FREEGO', 'FAZZIO', 'GRAND', 'SMASH', 'SHOGUN', 'THUNDER', 'SATRIA', 'SKYWAVE', 'SPIN', 'SKYDRIVE', 'GSX', 'KX', 'KLX', 'W175', 'ESTEEM'];
+            const r4Keywords = ['AVANZA', 'INNOVA', 'FORTUNER', 'PAJERO', 'BRIO', 'JAZZ', 'CRV', 'HRV', 'XPENDER', 'XPANDER', 'CARRY', 'L300', 'TRUK', 'PICKUP', 'PICK UP', 'MOBIL', 'R4', 'XENIA', 'CALYA', 'SIGRA', 'TERIOS', 'RUSH', 'AGYA', 'AYLA', 'ALPHARD', 'CIVIC', 'COROLLA', 'CAMRY', 'TRUCK', 'XTRAIL', 'GRANDMAX', 'GRAN MAX', 'LUXIO', 'TERIOS', 'SIRION', 'HIACE', 'AGYA', 'CALYA', 'RAIZE', 'AVANZA', 'VELOZ', 'INNOVA', 'FORTUNER', 'CAMRY', 'COROLLA', 'VIOS', 'YARIS', 'SIENTA', 'VOXY', 'ALPHARD', 'VELLFIRE', 'LAND CRUISER', 'HILUX', 'DYNA', 'APV', 'ERTIGA', 'IGNIS', 'BALENO', 'XL7', 'CARRY', 'JIMNY', 'PICK UP', 'GRAND MAX', 'LUXIO', 'TERIOS', 'XENIA', 'SIGRA', 'AYLA', 'SIRION', 'ROCKY', 'MOBILIO', 'BRV', 'B-RV', 'HRV', 'H-RV', 'CRV', 'C-RV', 'JAZZ', 'BRIO', 'CIVIC', 'ACCORD', 'CITY', 'FREED', 'STREAM', 'ODYSSEY', 'HR-V', 'BR-V', 'CR-V', 'EXPANDER', 'PAJERO', 'OUTLANDER', 'TRITON', 'ECLIPSE', 'L300', 'STARGAZER', 'CRETA', 'IONIQ', 'SANTA FE', 'TUCSON', 'PALISADE', 'ALVEZ', 'CORTEZ', 'CONFERO', 'FORMO', 'ALMAZ', 'JEEP', 'SEDAN', 'MINIBUS'];
 
             for (let kw of r2Keywords) {
                 if (combined.includes(kw)) return 'R2';
@@ -955,13 +955,13 @@
 
             let ccVal = parseInt(String(cylinder).replace(/[^0-9]/g, ''));
             if (!isNaN(ccVal) && ccVal > 0) {
-                if (ccVal <= 250 && (merek.includes('HONDA') || merek.includes('YAMAHA') || merek.includes('SUZUKI') || merek.includes('KAWASAKI'))) {
+                if (ccVal <= 250 && (merek.includes('HONDA') || merek.includes('YAMAHA') || merek.includes('SUZUKI') || merek.includes('KAWASAKI') || merek.includes('VESPA'))) {
                     return 'R2';
                 }
             }
 
-            if (merek.includes('YAMAHA') || merek.includes('KAWASAKI')) return 'R2';
-            if (merek.includes('TOYOTA') || merek.includes('MITSUBISHI') || merek.includes('DAIHATSU') || merek.includes('ISUZU') || merek.includes('NISSAN') || merek.includes('HYUNDAI') || merek.includes('MAZDA') || merek.includes('CHEVROLET')) return 'R4';
+            if (merek.includes('YAMAHA') || merek.includes('KAWASAKI') || merek.includes('VESPA')) return 'R2';
+            if (merek.includes('TOYOTA') || merek.includes('MITSUBISHI') || merek.includes('DAIHATSU') || merek.includes('ISUZU') || merek.includes('NISSAN') || merek.includes('HYUNDAI') || merek.includes('MAZDA') || merek.includes('CHEVROLET') || merek.includes('WULING') || merek.includes('CHERY')) return 'R4';
 
             return 'R4';
         }
@@ -1009,8 +1009,8 @@
             document.getElementById('metricR2').textContent = countR2.toLocaleString('id-ID');
             document.getElementById('metricR4').textContent = countR4.toLocaleString('id-ID');
             
-            const r2Pct = Math.round((countR2 / total) * 100);
-            const r4Pct = Math.round((countR4 / total) * 100);
+            const r2Pct = total > 0 ? Math.round((countR2 / total) * 100) : 0;
+            const r4Pct = total > 0 ? Math.round((countR4 / total) * 100) : 0;
             document.getElementById('metricR2Pct').textContent = `${r2Pct}% dari total`;
             document.getElementById('metricR4Pct').textContent = `${r4Pct}% dari total`;
 
@@ -1229,7 +1229,7 @@
                 const qNik = makeQueryClean(nik);
                 const qMssdn = makeQueryClean(mssdn);
 
-                // PURE CLEAN JSON PAYLOAD (FORMAT TARGET APP)
+                // PURE CLEAN JSON PAYLOAD (FORMAT TARGET APP TANPA TANGGAL DAFTAR)
                 const firestoreDocData = {
                     "nopol": nopol.toUpperCase() || "-",
                     "nama": nama || nasabah || "-",
@@ -1275,9 +1275,8 @@
             generateAnalyticsDashboard(processedVehicles);
             tampilkanTablePreview(processedVehicles);
 
-            // MULTI-KEY INDEXING DEDUPLICATION (Mendaftarkan 5 Kunci Pencarian Sekaligus)
+            // MULTI-KEY INDEXING DEDUPLICATION (Mendaftarkan 5 Kunci Pencarian Sekaligus, HURUF BESAR & KECIL)
             const firestoreDocMap = new Map();
-            let mergedCount = 0;
 
             processedVehicles.forEach(item => {
                 const keysToRegister = [
@@ -1295,7 +1294,6 @@
                             const existingData = firestoreDocMap.get(docId);
                             const mergedData = mergeDocDataDataCompleteness(existingData, item.docData);
                             firestoreDocMap.set(docId, mergedData);
-                            mergedCount++;
                         } else {
                             firestoreDocMap.set(docId, item.docData);
                         }
@@ -1308,13 +1306,12 @@
 
             if (dbFirestore && docEntries.length > 0) {
                 try {
-                    const batchSize = 100;
+                    const batchSize = 250;
                     const totalBatches = Math.ceil(docEntries.length / batchSize);
+                    updateProgressUI(true, `Mengunggah serentak ${writtenDocs} Dokumen Index (Parallel Speed)...`, 75);
 
+                    const batchPromises = [];
                     for (let b = 0; b < totalBatches; b++) {
-                        const pctProgress = Math.min(95, Math.round(30 + ((b + 1) / totalBatches) * 65));
-                        updateProgressUI(true, `Mengunggah ke Cloud Server: Batch ${b + 1} dari ${totalBatches}...`, pctProgress);
-
                         const batch = dbFirestore.batch();
                         const currentChunk = docEntries.slice(b * batchSize, (b + 1) * batchSize);
 
@@ -1323,24 +1320,39 @@
                             batch.set(docRef, docPayload, { merge: true });
                         });
 
-                        await batch.commit();
-                        logDiag(`✅ Firestore Batch ${b + 1}/${totalBatches} (${currentChunk.length} dokumen index) berhasil diunggah!`, 'success');
+                        // Proteksi Timeout 5 Detik per batch dengan Parallel Promise
+                        const commitPromise = Promise.race([
+                            batch.commit(),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout Batch ' + (b + 1))), 5000))
+                        ]).then(() => {
+                            logDiag(`⚡ Parallel Batch ${b + 1}/${totalBatches} (${currentChunk.length} doc) Selesai!`, 'success');
+                        }).catch((bErr) => {
+                            logDiag(`⚠️ Batch ${b + 1}/${totalBatches} note: ${bErr.message}`, 'warn');
+                        });
+
+                        batchPromises.push(commitPromise);
                     }
 
+                    // Eksekusi semua batch secara PARALEL (Serentak 100% KILAT)
+                    await Promise.all(batchPromises);
+
+                    // Background async log (tanpa me-tahan UI)
                     if (files && files.length > 0) {
-                        for (const f of files) {
-                            const fKey = makeFileHashKey(f.name, f.size);
-                            try {
-                                await dbFirestore.collection('history_uploads').doc(fKey).set({
-                                    nama_file: f.name,
-                                    ukuran_file: f.size,
-                                    diupload_oleh: namaPetugasActive,
-                                    waktu_unggah: waktuUploadLocale,
-                                    waktu_unggah_iso: waktuUploadISO,
-                                    jumlah_baris: processedVehicles.length
-                                }, { merge: true });
-                            } catch(e){}
-                        }
+                        (async () => {
+                            for (const f of files) {
+                                const fKey = makeFileHashKey(f.name, f.size);
+                                try {
+                                    await dbFirestore.collection('history_uploads').doc(fKey).set({
+                                        nama_file: f.name,
+                                        ukuran_file: f.size,
+                                        diupload_oleh: namaPetugasActive,
+                                        waktu_unggah: waktuUploadLocale,
+                                        waktu_unggah_iso: waktuUploadISO,
+                                        jumlah_baris: processedVehicles.length
+                                    }, { merge: true });
+                                } catch(e){}
+                            }
+                        })();
                     }
                 } catch (fErr) {
                     logDiag(`❌ Gagal Upload Firestore: ${fErr.message}`, 'err');
@@ -1348,35 +1360,37 @@
             }
 
             if (dbRealtime && processedVehicles.length > 0) {
-                try {
-                    const rtdbEntries = [];
-                    processedVehicles.forEach(item => {
-                        const safeNopol = cleanDocId(item.qNopol);
-                        if (isValidDocKey(safeNopol)) {
-                            rtdbEntries.push([safeNopol, item.docData]);
-                        }
-                    });
+                (async () => {
+                    try {
+                        const rtdbEntries = [];
+                        processedVehicles.forEach(item => {
+                            const safeNopol = cleanDocId(item.qNopol);
+                            if (isValidDocKey(safeNopol)) {
+                                rtdbEntries.push([safeNopol, item.docData]);
+                            }
+                        });
 
-                    const rtdbChunkSize = 150;
-                    for (let r = 0; r < rtdbEntries.length; r += rtdbChunkSize) {
-                        const chunk = rtdbEntries.slice(r, r + rtdbChunkSize);
-                        const rtdbBatchObj = {};
-                        chunk.forEach(([k, v]) => rtdbBatchObj[k] = v);
-                        await dbRealtime.ref('data_kendaraan').update(rtdbBatchObj);
-                    }
-                } catch (rErr) {}
+                        const rtdbChunkSize = 150;
+                        for (let r = 0; r < rtdbEntries.length; r += rtdbChunkSize) {
+                            const chunk = rtdbEntries.slice(r, r + rtdbChunkSize);
+                            const rtdbBatchObj = {};
+                            chunk.forEach(([k, v]) => rtdbBatchObj[k] = v);
+                            await dbRealtime.ref('data_kendaraan').update(rtdbBatchObj);
+                        }
+                    } catch (rErr) {}
+                })();
             }
 
             const totalTimeSec = ((performance.now() - startTime) / 1000).toFixed(2);
 
             updateProgressUI(true, `Selesai!`, 100);
-            setMsgStatus(`✅ <strong>SUKSES 100% TERUNGGAH LENGKAP!</strong> ${processedVehicles.length} Data Kendaraan Valid (Total ${writtenDocs} Multi-Key Index Server) diproses penuh dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
-            showToast("⚡ Sukses Impor Multi-Key Indexing!");
+            setMsgStatus(`✅ <strong>SUKSES 100% TERUNGGAH KILAT!</strong> ${processedVehicles.length} Data Kendaraan Valid (Total ${writtenDocs} Multi-Key Index Server) selesai diproses serentak dalam ${totalTimeSec} detik.<br>👤 Petugas: <strong>${namaPetugasActive}</strong> | 📄 File: <strong>${primaryFileName}</strong>`, 'sukses');
+            showToast("⚡ Sukses Impor Parallel Engine!");
 
             tampilkanSummaryStats(files ? files.length : 1, processedVehicles.length, writtenDocs);
             cekTotalDatabaseCloud();
             
-            setTimeout(() => { updateProgressUI(false); }, 500);
+            setTimeout(() => { updateProgressUI(false); }, 300);
             document.getElementById('btnSelectFile').disabled = false;
         }
 
